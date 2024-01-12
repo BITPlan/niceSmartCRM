@@ -4,12 +4,12 @@ Created on 2024-01-10
 @author: wf
 """
 from ngwidgets.input_webserver import InputWebserver
+from ngwidgets.lod_grid import ListOfDictsGrid
 from ngwidgets.progress import NiceguiProgressbar
 from ngwidgets.webserver import WebserverConfig
-from ngwidgets.lod_grid import ListOfDictsGrid
 from nicegui import Client, app, ui
 
-from crm.crm_core import CRM, Organizations
+from crm.crm_core import CRM, Organizations, Persons
 from crm.version import Version
 
 
@@ -32,17 +32,36 @@ class CrmWebServer(InputWebserver):
     def __init__(self):
         """Constructs all the necessary attributes for the WebServer object."""
         InputWebserver.__init__(self, config=CrmWebServer.get_config())
-
+        self.load_entities()
+        
         @ui.page("/organizations")
         async def organizations(client: Client):
             return await self.organizations()
+
+        @ui.page("/persons")
+        async def persons(client: Client):
+            return await self.persons()
+        
+        
+    def load_entities(self):
+        organizations=Organizations()
+        self.org_lod = organizations.from_json_file()
+        persons=Persons()
+        self.person_lod = persons.from_json_file()
 
     def configure_menu(self):
         """
         configure the menu
         """
         self.link_button(
-            name="organizations", icon_name="apartment", target="/organizations"
+            name="organizations", 
+            icon_name="apartment", 
+            target="/organizations"
+        )
+        self.link_button(
+            name="persons", 
+            icon_name="people", 
+            target="/persons"
         )
 
     async def organizations(self):
@@ -51,12 +70,18 @@ class CrmWebServer(InputWebserver):
         """
 
         def show():
+            """ 
             """
-            """
-            org_lod=Organizations.from_json_file()
-            self.org_lod_grid=ListOfDictsGrid(lod=org_lod)
+            self.org_lod_grid = ListOfDictsGrid(lod=self.org_lod)
             pass
 
+        await self.setup_content_div(show)
+
+    async def persons(self):
+        def show():
+            
+            self.person_lod_grid = ListOfDictsGrid(lod=self.person_lod)
+            pass
         await self.setup_content_div(show)
 
     async def home(self, client: Client):

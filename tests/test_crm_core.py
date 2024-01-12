@@ -7,7 +7,7 @@ import json
 
 from ngwidgets.basetest import Basetest
 
-from crm.crm_core import CRM, Organizations
+from crm.crm_core import CRM, Organizations, Persons
 
 
 class TestCRM(Basetest):
@@ -15,11 +15,13 @@ class TestCRM(Basetest):
     test CRM
     """
 
-    def test_organizations(self):
+    def test_entities(self):
         """ """
-        org_lod = Organizations.from_json_file()
         debug = self.debug
         debug = True
-        if debug:
-            print(f"found {len(org_lod)} organizations")
-            print(json.dumps(org_lod[0], indent=2,default=str))
+        for entity_class in (Organizations, Persons):
+            entities = entity_class()
+            lod = entities.from_json_file()
+            if debug:
+                print(f"found {len(lod)} {entities.plural_name}")
+                print(json.dumps(lod[0], indent=2, default=str))
