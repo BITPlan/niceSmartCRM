@@ -1,0 +1,8 @@
+#!/bin/bash
+# WF 2024-01-12
+# start CRM server
+git pull
+python -m venv .venv
+source .venv/bin/activate
+pip install .
+smartcrm --serve --host 0.0.0.0 --debug
