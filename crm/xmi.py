@@ -65,6 +65,9 @@ class ModelElement:
         text='\n'.join(textwrap.wrap(self.documentation, width=limit))
         return text
     
+    def add_to_lookup(self,lookup:Dict):
+        lookup[self.id]=self
+    
     @classmethod
     def as_short_name(cls,name:str)->str:
         if name is None:
@@ -239,6 +242,15 @@ class Class(ModelElement):
                 class_.roles[role.name] = role
         return class_
     
+    def add_to_lookup(self, lookup: Dict):
+        super().add_to_lookup(lookup)  # Add the class itself
+        for attribute in self.attributes.values():  # Add all attributes
+            attribute.add_to_lookup(lookup)
+        for operation in self.operations.values():  # Add all operations
+            operation.add_to_lookup(lookup)
+        for role in self.roles.values():  # Add all roles
+            role.add_to_lookup(lookup)
+    
     def as_plantuml(self, indentation=""):
         """
         Generate PlantUML representation for this Class and its contents.
@@ -311,6 +323,13 @@ class Package(ModelElement):
             package.packages_by_name[sub_package.name] = sub_package
         return package
     
+    def add_to_lookup(self, lookup: Dict):
+        super().add_to_lookup(lookup)  # Add the package itself
+        for sub_package in self.packages.values():  # Add all sub-packages
+            sub_package.add_to_lookup(lookup)
+        for class_ in self.classes.values():  # Add all classes
+            class_.add_to_lookup(lookup)
+    
     def as_plantuml(self, indentation=""):
         """
         Generate PlantUML representation for this Package and its contents.
@@ -373,8 +392,36 @@ class Model(Package):
         """
         data = cls.raw_read_xmi_json(file_path)
         model = cls.from_xmi_dict(None, data)
+        model.create_lookup()
         return model
-
+    
+    def create_lookup(self):
+        """
+        create the lookup dict
+        """
+        self.lookup={}
+        self.add_to_lookup(self.lookup)
+        
+    def as_plantuml(self, indentation=""):
+        plant_uml=super().as_plantuml(indentation)
+        for _model_id,element in self.lookup.items():
+     
+            if isinstance(element,Role):
+                l_multi=""
+                r_multi=""
+                multi=element.multiplicity
+                if multi:
+                    multi_parts=multi.split("..")
+                    if len(multi_parts)==2:
+                        l_multi,r_multi=multi_parts
+                        r_multi=f'"{r_multi}"'
+                    else:
+                        l_multi=multi_parts[0]
+                    l_multi=f'"{l_multi}"'
+                   
+                relation_plantuml = f"{element.parent.short_name} {l_multi} -- {r_multi} {element.type} : {element.short_name}"               
+                plant_uml += f"{indentation} {relation_plantuml}\n"
+        return plant_uml
     def to_plant_uml(self) -> str:
         """
         Generate a PlantUML representation of the model.

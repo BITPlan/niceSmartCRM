@@ -33,10 +33,12 @@ class TestXMI(Basetest):
         test reading xmi file to XMI struture
         """
         model = Model.from_xmi_json(self.xmi_json_path)
-        plant_uml = model.to_plant_uml()
         if self.debug:
-            print(plant_uml)
-        xmi_json=model.to_json()
+            print(f"found {len(model.lookup)} model elements")
+            for model_id,element in model.lookup.items():
+                print(f"{model_id}:{element.__class__.__name__}:{element.short_name}")
+        plant_uml = model.to_plant_uml()
+        xmi_json=model.to_json(indent=2)
         for file_path,text in [
             ("/tmp/smartcrm.puml",plant_uml),
             ("/tmp/smartcrm_xmi.json",xmi_json)
