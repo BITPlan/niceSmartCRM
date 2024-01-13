@@ -27,6 +27,8 @@ dependencies = [
 	"pymysql>=1.1.0",
 	# https://pypi.org/project/PyYAML/
 	"PyYAML>=6.0.1"
+	# https://pypi.org/project/linkml/
+	"linkml>=1.6.8" 
 ]
 
 requires-python = ">=3.9"

@@ -1,0 +1,7 @@
+@prefix person: <https://smartcrm.bitplan.com/linkml/person> .
+
+[] a person:Person ;
+    person:kind "contact" ;
+    person:person_number "wf04002101" .
+
+
