@@ -94,13 +94,46 @@ class Attribute(ModelElement):
         attribute.type = node.get("@type")
 
         return attribute
+    
+@dataclass
+class Parameter(ModelElement):
+    # Add any specific fields for Parameter if needed
+
+    @classmethod
+    def from_dict(cls, parent: ModelElement, node: Dict) -> 'Parameter':
+        return super().from_dict(parent, node)
+    
+@dataclass
+class Operation(ModelElement):
+    is_static: Optional[str] = None
+    is_abstract: Optional[str] = None
+    parameters: Dict[str, 'Parameter'] = field(default_factory=dict)
+
+    @classmethod
+    def from_dict(cls, parent: ModelElement, node: Dict) -> 'Operation':
+        operation = super().from_dict(parent, node)
+        operation.is_static = node.get('@isStatic')
+        operation.is_abstract = node.get('@isAbstract')
+
+        # Process parameters
+        for param_list in node.get('parameters', {}).values():
+            # return parameter
+            if isinstance(param_list,dict):
+                param_list=[param_list]
+            for param in param_list:
+                parameter = Parameter.from_dict(operation, param)
+                operation.parameters[parameter.name] = parameter
+
+        return operation
+
 
 
 @dataclass
 class Class(ModelElement):
     is_abstract: Optional[str] = None
     attributes: Dict[str, Attribute] = field(default_factory=dict)
-
+    operations: Dict[str, Operation] = field(default_factory=dict)
+ 
     @classmethod
     def from_dict(cls, parent: ModelElement, node: Dict) -> "Class":
         class_ = super().from_dict(parent, node)
@@ -110,8 +143,17 @@ class Class(ModelElement):
             for attr in attr_list:
                 attribute = Attribute.from_dict(class_, attr)
                 class_.attributes[attribute.name] = attribute
-        return class_
+    
+        # Process operations
+        for op_list in node.get('operations', {}).values():
+            if isinstance(op_list,dict):
+                op_list=[op_list]
+            for op in op_list:
+                operation = Operation.from_dict(class_, op)
+                class_.operations[operation.name] = operation
 
+        return class_
+    
 
 @dataclass
 class Package(ModelElement):
