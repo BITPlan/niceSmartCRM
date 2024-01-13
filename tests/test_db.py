@@ -34,7 +34,9 @@ class TestDB(Basetest):
         """
         limit = 3
         _results = self.check_query(f"SELECT * FROM person LIMIT {limit}", limit)
-        _results = self.check_query(f"SELECT * FROM person WHERE personnummer='wf04002101'", expected=1)
+        _results = self.check_query(
+            f"SELECT * FROM person WHERE personnummer='wf04002101'", expected=1
+        )
 
     def test_show_tables(self):
         """
