@@ -33,7 +33,7 @@ class CrmWebServer(InputWebserver):
         """Constructs all the necessary attributes for the WebServer object."""
         InputWebserver.__init__(self, config=CrmWebServer.get_config())
         self.load_entities()
-        
+
         @ui.page("/organizations")
         async def organizations(client: Client):
             return await self.organizations()
@@ -41,12 +41,11 @@ class CrmWebServer(InputWebserver):
         @ui.page("/persons")
         async def persons(client: Client):
             return await self.persons()
-        
-        
+
     def load_entities(self):
-        organizations=Organizations()
+        organizations = Organizations()
         self.org_lod = organizations.from_json_file()
-        persons=Persons()
+        persons = Persons()
         self.person_lod = persons.from_json_file()
 
     def configure_menu(self):
@@ -54,15 +53,9 @@ class CrmWebServer(InputWebserver):
         configure the menu
         """
         self.link_button(
-            name="organizations", 
-            icon_name="apartment", 
-            target="/organizations"
+            name="organizations", icon_name="apartment", target="/organizations"
         )
-        self.link_button(
-            name="persons", 
-            icon_name="people", 
-            target="/persons"
-        )
+        self.link_button(name="persons", icon_name="people", target="/persons")
 
     async def organizations(self):
         """
@@ -70,8 +63,7 @@ class CrmWebServer(InputWebserver):
         """
 
         def show():
-            """ 
-            """
+            """ """
             self.org_lod_grid = ListOfDictsGrid(lod=self.org_lod)
             pass
 
@@ -79,9 +71,10 @@ class CrmWebServer(InputWebserver):
 
     async def persons(self):
         def show():
-            
+
             self.person_lod_grid = ListOfDictsGrid(lod=self.person_lod)
             pass
+
         await self.setup_content_div(show)
 
     async def home(self, client: Client):
