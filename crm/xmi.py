@@ -28,13 +28,75 @@ class TaggedValue:
         return cls(name=name, value=value)
         
 @dataclass
-class Package:
+class ModelElement:
+    """
+    Base model element class
+    """
     name: str
     id: str
     stereotype: str
     visibility: str
     documentation: str
     tagged_values: Dict[str, TaggedValue] = field(default_factory=dict)
+
+    @classmethod
+    def from_dict(cls, node: Dict) -> 'ModelElement':
+        """
+        Create a ModelElement instance from a dictionary.
+
+        Args:
+            node (Dict): A dictionary representing a ModelElement.
+
+        Returns:
+            ModelElement: An instance of ModelElement.
+        """
+        element = cls(
+            name=node.get('@name'),
+            id=node.get('@id'),
+            stereotype=node.get('@stereotype'),
+            visibility=node.get('@visibility'),
+            documentation=node.get('Documentation')
+        )
+
+        for tv_list in node.get('taggedValues', {}).values():
+            for tv in tv_list:
+                tagged_value = TaggedValue.from_dict(tv)
+                element.tagged_values[tagged_value.name] = tagged_value
+
+        return element
+    
+@dataclass
+class Attribute(ModelElement):
+    is_static: Optional[str]=None
+    type: Optional[str] =None
+
+    @classmethod
+    def from_dict(cls, node: Dict) -> 'Attribute':
+        attribute = super().from_dict(node)
+        attribute.is_static = node.get('@isStatic')
+        attribute.type = node.get('@type')
+
+        return attribute
+    
+@dataclass
+class Class(ModelElement):
+    is_abstract: Optional[str]=None
+    attributes: Dict[str, Attribute] = field(default_factory=dict)
+
+    @classmethod
+    def from_dict(cls, node: Dict) -> 'Class':
+        class_ = super().from_dict(node)
+        class_.is_abstract = node.get('@isAbstract')
+        # Process attributes
+        for attr_list in node.get('attributes', {}).values():
+            for attr in attr_list:
+                attribute = Attribute.from_dict(attr)
+                class_.attributes[attribute.name] = attribute
+        return class_
+    
+
+@dataclass
+class Package(ModelElement):
     packages: Dict[str, 'Package'] = field(default_factory=dict)
     packages_by_name: Dict[str, 'Package'] = field(default_factory=dict)
 
@@ -54,13 +116,8 @@ class Package:
             pnode=node["Package"]
         else:
             pnode=node
-        package = cls(
-            name=pnode.get('@name'),
-            id=pnode.get('@id'),
-            stereotype=pnode.get('@stereotype'),
-            visibility=pnode.get('@visibility'),
-            documentation=pnode.get('Documentation')
-        )
+            
+        package = super().from_dict(pnode)
 
         #Process tagged values
         for tv_list in pnode.get('taggedValues', {}).values():
@@ -76,9 +133,10 @@ class Package:
         return package
 
     
-class XMI(Package):
+class Model(Package):
     """
-    reader for XMI files which have been converted to JSON
+    Model with option to read from
+    XMI files which have been converted to JSON
     """
     
     @classmethod
@@ -102,9 +160,9 @@ class XMI(Package):
             file_path(str): the file_path to read from
             
         Returns:
-            XMI: the XMI instance
+            Model: the Model instance
         """
         data=cls.raw_read_xmi_json(file_path)
-        xmi=cls.from_dict(data)
-        return xmi
+        model=cls.from_dict(data)
+        return model
         

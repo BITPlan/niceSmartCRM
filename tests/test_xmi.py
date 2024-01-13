@@ -3,8 +3,8 @@ Created on 2024-01-13
 
 @author: wf
 """
-import json
-from crm.xmi import XMI
+
+from crm.xmi import Model
 from ngwidgets.basetest import Basetest
 from pathlib import Path
 
@@ -28,6 +28,6 @@ class TestXMI(Basetest):
         """
         test reading xmi file to XMI struture
         """
-        model=XMI.from_xmi_json(self.xmi_json_path)
+        model=Model.from_xmi_json(self.xmi_json_path)
         pass
         
