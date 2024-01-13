@@ -37,4 +37,8 @@ class TestXMI(Basetest):
         plant_uml = model.to_plant_uml()
         if self.debug:
             print(plant_uml)
-        pass
+        # Write PlantUML to /tmp/smartcrml.puml
+        output_file_path = "/tmp/smartcrm.puml"
+        with open(output_file_path, "w") as output_file:
+            output_file.write(plant_uml)
+

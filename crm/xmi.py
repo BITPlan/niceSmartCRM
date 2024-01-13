@@ -6,7 +6,7 @@ Created on 2024-01-14
 import json
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
-
+import textwrap
 
 @dataclass
 class TaggedValue:
@@ -51,7 +51,26 @@ class ModelElement:
         for name: Logical View::com::bitplan::smartCRM::Organisation::Name
         return "Name"
         """
-        return self.name.split("::")[-1]
+        short_name=ModelElement.as_short_name(self.name)
+        return short_name
+    
+    def multi_line_doc(self, limit: int) -> str:
+        """
+        Returns the documentation as a multiline string with a limited length per line.
+        Lines are broken at whitespace.
+        
+        :param limit: The maximum length of each line.
+        :return: Multiline string.
+        """
+        text='\n'.join(textwrap.wrap(self.documentation, width=limit))
+        return text
+    
+    @classmethod
+    def as_short_name(cls,name:str)->str:
+        if name is None:
+            return None
+        short_name=name.split("::")[-1]
+        return short_name
 
     @classmethod
     def from_dict(cls, parent: "ModelElement", node: Dict) -> "ModelElement":
@@ -81,7 +100,9 @@ class ModelElement:
 
         return element
 
-
+    def as_plantuml(self, _indentation=""):
+        return ""
+    
 @dataclass
 class Attribute(ModelElement):
     is_static: Optional[str] = None
@@ -97,11 +118,13 @@ class Attribute(ModelElement):
     
 @dataclass
 class Parameter(ModelElement):
-    # Add any specific fields for Parameter if needed
+    type: Optional[str]=None
 
     @classmethod
     def from_dict(cls, parent: ModelElement, node: Dict) -> 'Parameter':
-        return super().from_dict(parent, node)
+        param=super().from_dict(parent, node)
+        param.type = node.get("@type")
+        return param
     
 @dataclass
 class Operation(ModelElement):
@@ -125,7 +148,36 @@ class Operation(ModelElement):
                 operation.parameters[parameter.name] = parameter
 
         return operation
+    
+    def as_plantuml(self, indentation=""):
+        """
+        Generate PlantUML representation for this Operation.
 
+        Args:
+            indentation (str): Indentation for the PlantUML code.
+
+        Returns:
+            str: The PlantUML representation for this Operation.
+        """
+        plantuml = f"{indentation}{self.short_name}("
+        
+        # Add parameters
+        params = []
+        return_type=None
+        for param_name, param in self.parameters.items():
+            type_short=ModelElement.as_short_name(param.type)
+            if not param_name.endswith("::return") and not param_name=="return":
+                param_str = f"{param.short_name}: {type_short}"
+                params.append(param_str)
+            else:
+                return_type=type_short
+                
+        # Handle return type
+        if return_type:
+            params.append(f"return: {return_type}")
+        plantuml += ", ".join(params)
+        plantuml += ")"
+        return plantuml
 
 
 @dataclass
@@ -153,6 +205,38 @@ class Class(ModelElement):
                 class_.operations[operation.name] = operation
 
         return class_
+    
+    def as_plantuml(self, indentation=""):
+        """
+        Generate PlantUML representation for this Class and its contents.
+
+        Args:
+            indentation (str): Indentation for the PlantUML code.
+
+        Returns:
+            str: The PlantUML representation for this Class and its contents.
+        """
+        plantuml = f"{indentation}class {self.short_name} {{\n"
+
+        # Add attributes
+        for _attr_name, attr in self.attributes.items():
+            attr_type=attr.type
+            if "enum" in attr_type:
+                attr_type="enum"
+            # [[{{{attr.documentation}}} {attr.short_name} ]] 
+            plantuml += f"{indentation}  {attr.short_name}: {attr_type}\n"
+
+        # Add operations
+        for _op_name, op in self.operations.items():
+            operation_plantuml = op.as_plantuml(indentation + "  ")
+            plantuml += f"{operation_plantuml}\n"
+
+        plantuml += f"{indentation}}}\n"
+        plantuml += f"""note top of {self.short_name}
+{self.multi_line_doc(40)}
+end note
+"""
+        return plantuml
     
 
 @dataclass
@@ -192,6 +276,35 @@ class Package(ModelElement):
             package.packages[sub_package.id] = sub_package
             package.packages_by_name[sub_package.name] = sub_package
         return package
+    
+    def as_plantuml(self, indentation=""):
+        """
+        Generate PlantUML representation for this Package and its contents.
+
+        Args:
+            indentation (str): Indentation for the PlantUML code.
+
+        Returns:
+            str: The PlantUML representation for this Package and its contents.
+        """
+        plantuml = f"{indentation}package {self.short_name} {{\n"
+
+        # Add classes within the package
+        for _class_name, class_obj in self.classes.items():
+            class_plantuml = class_obj.as_plantuml(indentation + "  ")
+            plantuml += f"{class_plantuml}\n"
+
+        # Add sub-packages within the package
+        for _sub_package_name, sub_package_obj in self.packages.items():
+            sub_package_plantuml = sub_package_obj.as_plantuml(indentation + "  ")
+            plantuml += f"{sub_package_plantuml}\n"
+
+        plantuml += f"{indentation}}}\n"
+        plantuml+=f"""note top of {self.short_name}
+{self.documentation}
+end note
+"""
+        return plantuml
 
 
 class Model(Package):
@@ -234,23 +347,89 @@ class Model(Package):
         Returns:
             str: The PlantUML string.
         """
+        skinparams="""
+' BITPlan Corporate identity skin params
+' Copyright (c) 2015-2023 BITPlan GmbH
+' see http://wiki.bitplan.com/PlantUmlSkinParams#BITPlanCI
+' skinparams generated by com.bitplan.restmodelmanager
+skinparam note {
+  BackGroundColor #FFFFFF
+  FontSize 12
+  ArrowColor #FF8000
+  BorderColor #FF8000
+  FontColor black
+  FontName Technical
+}
+skinparam component {
+  BackGroundColor #FFFFFF
+  FontSize 12
+  ArrowColor #FF8000
+  BorderColor #FF8000
+  FontColor black
+  FontName Technical
+}
+skinparam package {
+  BackGroundColor #FFFFFF
+  FontSize 12
+  ArrowColor #FF8000
+  BorderColor #FF8000
+  FontColor black
+  FontName Technical
+}
+skinparam usecase {
+  BackGroundColor #FFFFFF
+  FontSize 12
+  ArrowColor #FF8000
+  BorderColor #FF8000
+  FontColor black
+  FontName Technical
+}
+skinparam activity {
+  BackGroundColor #FFFFFF
+  FontSize 12
+  ArrowColor #FF8000
+  BorderColor #FF8000
+  FontColor black
+  FontName Technical
+}
+skinparam classAttribute {
+  BackGroundColor #FFFFFF
+  FontSize 12
+  ArrowColor #FF8000
+  BorderColor #FF8000
+  FontColor black
+  FontName Technical
+}
+skinparam interface {
+  BackGroundColor #FFFFFF
+  FontSize 12
+  ArrowColor #FF8000
+  BorderColor #FF8000
+  FontColor black
+  FontName Technical
+}
+skinparam class {
+  BackGroundColor #FFFFFF
+  FontSize 12
+  ArrowColor #FF8000
+  BorderColor #FF8000
+  FontColor black
+  FontName Technical
+}
+skinparam object {
+  BackGroundColor #FFFFFF
+  FontSize 12
+  ArrowColor #FF8000
+  BorderColor #FF8000
+  FontColor black
+  FontName Technical
+}
+hide circle
+' end of skinparams '"""
         plant_uml = "@startuml\n"
-        plant_uml += self._generate_plant_uml(self)
+        plant_uml += f"{skinparams}\n"
+        plant_uml += self.as_plantuml("")
         plant_uml += "@enduml"
         return plant_uml
 
-    def _generate_plant_uml(self, element, indent="") -> str:
-        uml = ""
-        if isinstance(element, Package):
-            uml = f"{indent}package {element.short_name} {{\n"
-            for pkg in element.packages.values():
-                uml += self._generate_plant_uml(pkg, indent + "  ")
-            for _class in element.classes.values():
-                uml += self._generate_plant_uml(_class, indent + "  ")
-            uml += f"{indent}}}\n"
-        if isinstance(element, Class):
-            uml += f"{indent}class {element.short_name} {{\n"
-            for _attr_name, attr in element.attributes.items():
-                uml += f"{indent}  {attr.short_name} : {attr.type}\n"
-            uml += f"{indent}}}\n"
-        return uml
+
