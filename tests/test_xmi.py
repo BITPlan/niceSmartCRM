@@ -21,7 +21,9 @@ class TestXMI(Basetest):
         """
         test reading xmi file
         """
-        data=self.xmi.raw_read_xmi_json(self.xmi_json_path)
+        data=Model.raw_read_xmi_json(self.xmi_json_path)
+        if self.debug:
+            pass
         pass
     
     def test_xmi_from_xmi_json(self):
@@ -29,5 +31,8 @@ class TestXMI(Basetest):
         test reading xmi file to XMI struture
         """
         model=Model.from_xmi_json(self.xmi_json_path)
+        plant_uml=model.to_plant_uml()
+        if self.debug:
+            print(plant_uml)
         pass
         
