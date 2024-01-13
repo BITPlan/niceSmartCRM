@@ -4,23 +4,24 @@ Created on 2024-01-12
 @author: wf
 """
 import json
+from typing import Dict, List
 
 from ngwidgets.basetest import Basetest
 
 from crm.crm_core import EntityManager, Organizations, Persons
-from typing import Dict,List
 from crm.db import DB
+
 
 class TestCRM(Basetest):
     """
     test CRM
     """
-    
+
     def setUp(self, debug=True, profile=True):
         Basetest.setUp(self, debug=debug, profile=profile)
-        self.db=DB()
-    
-    def show_lod(self,entities:EntityManager,lod:List[Dict],limit:int=3):
+        self.db = DB()
+
+    def show_lod(self, entities: EntityManager, lod: List[Dict], limit: int = 3):
         if self.debug:
             print(f"found {len(lod)} {entities.plural_name}")
             for index in range(limit):
@@ -28,7 +29,7 @@ class TestCRM(Basetest):
 
     def test_entities(self):
         """
-        test reading entities  
+        test reading entities
         """
         debug = self.debug
         debug = True
@@ -37,5 +38,4 @@ class TestCRM(Basetest):
             lod = entities.from_json_file()
             self.show_lod(entities, lod)
             lod = entities.from_db(self.db)
-            self.show_lod(entities,lod)
-         
+            self.show_lod(entities, lod)

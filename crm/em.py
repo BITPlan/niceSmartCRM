@@ -1,13 +1,15 @@
-'''
+"""
 Created on 2024-01-13
 
 @author: wf
-'''
-from pathlib import Path
+"""
 import json
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, List
+
 from crm.db import DB
+
 
 class CRM:
     """
@@ -26,6 +28,8 @@ class CRM:
         # Append the relative path to the home directory
         root_path = f"{home}/.smartcrm"
         return root_path
+
+
 class EntityManager:
     """
     Generic Entity Manager
@@ -52,10 +56,10 @@ class EntityManager:
         if date_value is None:
             return None
         if isinstance(date_value, str):
-            date_str=date_value
+            date_str = date_value
             parsed_date = datetime.fromisoformat(date_str) if date_str else None
         else:
-            parsed_date=date_value
+            parsed_date = date_value
         return parsed_date
 
     def _convert_to_int(self, num_str: str) -> int:
@@ -74,7 +78,7 @@ class EntityManager:
             return int(num_str)
         except ValueError:
             return 0
-        
+
     def from_db(self, db: DB) -> List[Dict]:
         """
         Fetch entities from the database.

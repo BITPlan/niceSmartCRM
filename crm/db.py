@@ -1,19 +1,21 @@
-'''
+"""
 Created on 2024-01-13
 
 
 @author: wf
-'''
+"""
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
+from urllib.parse import quote_plus
+
 import pymysql
 import yaml
-from pathlib import Path
-from urllib.parse import quote_plus
-from typing import Dict, Any, List, Tuple
+
 
 class DB:
     """
     Database wrapper for managing direct database connections and executing queries using PyMySQL.
-    
+
     Attributes:
         config (Dict[str, Any]): Database configuration details.
         connection (pymysql.connections.Connection): PyMySQL connection instance.
@@ -28,7 +30,7 @@ class DB:
                                          Defaults to '~/.smartcrm/db_config.yaml'.
         """
         if config_path is None:
-            config_path = f'{Path.home()}/.smartcrm/db_config.yaml'
+            config_path = f"{Path.home()}/.smartcrm/db_config.yaml"
         self.config = self.load_config(config_path)
         self.connection = self.create_connection()
 
@@ -42,8 +44,8 @@ class DB:
         Returns:
             Dict[str, Any]: A dictionary containing database configuration.
         """
-        with open(path, 'r') as file:
-            return yaml.safe_load(file)['database']
+        with open(path, "r") as file:
+            return yaml.safe_load(file)["database"]
 
     def create_connection(self) -> pymysql.connections.Connection:
         """
@@ -53,12 +55,12 @@ class DB:
             pymysql.connections.Connection: PyMySQL connection instance.
         """
         config = {
-            'host': self.config['host'],
-            'user': self.config['user'],
-            'password': self.config['password'],
-            'db': self.config['name'],
-            'charset': 'utf8mb4',
-            'cursorclass': pymysql.cursors.DictCursor
+            "host": self.config["host"],
+            "user": self.config["user"],
+            "password": self.config["password"],
+            "db": self.config["name"],
+            "charset": "utf8mb4",
+            "cursorclass": pymysql.cursors.DictCursor,
         }
         return pymysql.connect(**config)
 
@@ -82,5 +84,3 @@ class DB:
         """
         if self.connection:
             self.connection.close()
-
-

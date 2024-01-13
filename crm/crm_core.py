@@ -5,10 +5,12 @@ Created on 2024-01-12
 """
 from dataclasses import dataclass
 from datetime import datetime
-from pathlib import Path
 from typing import Dict, List
+
 from dataclasses_json import dataclass_json
+
 from crm.em import EntityManager
+
 
 @dataclass_json
 @dataclass
@@ -140,6 +142,3 @@ class Persons(EntityManager):
             }
             person_list.append(converted_person)
         return person_list
-
-
-
