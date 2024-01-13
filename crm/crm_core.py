@@ -7,8 +7,8 @@ import json
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
-
+from typing import Any, Dict, List
+from crm.db import DB
 from dataclasses_json import dataclass_json
 
 
@@ -25,19 +25,23 @@ class EntityManager:
             self.entity_name[0].upper() + self.entity_name[1:] + "Manager"
         )
 
-    def _convert_to_datetime(self, date_str: str) -> datetime:
+    def _convert_to_datetime(self, date_value: Any) -> datetime:
         """
-        Convert a string to a datetime object.
+        Convert a value to a datetime object.
 
         Args:
-            date_str (str): Date string to convert.
+            date_str (Any): Date value to convert.
 
         Returns:
             datetime: A datetime object.
         """
-        if date_str is None:
+        if date_value is None:
             return None
-        parsed_date = datetime.fromisoformat(date_str) if date_str else None
+        if isinstance(date_value, str):
+            date_str=date_value
+            parsed_date = datetime.fromisoformat(date_str) if date_str else None
+        else:
+            parsed_date=date_value
         return parsed_date
 
     def _convert_to_int(self, num_str: str) -> int:
@@ -56,6 +60,21 @@ class EntityManager:
             return int(num_str)
         except ValueError:
             return 0
+        
+    def from_db(self, db: DB) -> List[Dict]:
+        """
+        Fetch entities from the database.
+
+        Args:
+            db (DB): Database object to execute queries.
+
+        Returns:
+            List[Dict]: A list of entity dictionaries.
+        """
+        query = f"SELECT * FROM {self.entity_name}"
+        smartcrm_lod = db.execute_query(query)
+        lod = self.from_smartcrm(smartcrm_lod)
+        return lod
 
     def from_json_file(self, json_path: str = None):
         """

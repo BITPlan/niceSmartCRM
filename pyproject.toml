@@ -23,8 +23,6 @@ dependencies = [
 	"dataclasses-json>=0.6.1",
 	# https://github.com/trentm/python-markdown2
 	"markdown2>=2.4.11",
-	# https://pypi.org/project/SQLAlchemy/
-	"SQLAlchemy>=2.0.25", 
 	# https://pypi.org/project/pymysql/
 	"pymysql>=1.1.0",
 	# https://pypi.org/project/PyYAML/
