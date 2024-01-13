@@ -11,6 +11,9 @@
                     "type": "string"
                 }
             },
+            "required": [
+                "person_number"
+            ],
             "title": "Person",
             "type": "object"
         },
