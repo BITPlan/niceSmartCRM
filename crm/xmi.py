@@ -5,18 +5,20 @@ Created on 2024-01-14
 """
 import json
 from dataclasses import dataclass, field
+from dataclasses_json import dataclass_json
 from typing import Dict, List, Optional
 import textwrap
 
+@dataclass_json
 @dataclass
 class TaggedValue:
     name: str
     value: Optional[str] = field(
-        default=None, metadata={"json": "@name", "value": "Value"}
+        default=None
     )
 
     @classmethod
-    def from_dict(cls, node: Dict) -> "TaggedValue":
+    def from_xmi_dict(cls, node: Dict) -> "TaggedValue":
         """
         Create a TaggedValue instance from a dictionary.
 
@@ -30,14 +32,12 @@ class TaggedValue:
         value = node.get("Value")
         return cls(name=name, value=value)
 
-
+@dataclass_json
 @dataclass
 class ModelElement:
     """
     Base model element class
     """
-
-    parent: "ModelElement"
     name: str
     id: str
     stereotype: str
@@ -73,7 +73,7 @@ class ModelElement:
         return short_name
 
     @classmethod
-    def from_dict(cls, parent: "ModelElement", node: Dict) -> "ModelElement":
+    def from_xmi_dict(cls, parent: "ModelElement", node: Dict) -> "ModelElement":
         """
         Create a ModelElement instance from a dictionary.
 
@@ -85,56 +85,60 @@ class ModelElement:
             ModelElement: An instance of ModelElement.
         """
         element = cls(
-            parent=parent,
             name=node.get("@name"),
             id=node.get("@id"),
             stereotype=node.get("@stereotype"),
             visibility=node.get("@visibility"),
             documentation=node.get("Documentation"),
         )
+        element.parent=parent
 
         for tv_list in node.get("taggedValues", {}).values():
             for tv in tv_list:
-                tagged_value = TaggedValue.from_dict(tv)
+                tagged_value = TaggedValue.from_xmi_dict(tv)
                 element.tagged_values[tagged_value.name] = tagged_value
 
         return element
 
     def as_plantuml(self, _indentation=""):
         return ""
-    
-@dataclass
+   
+@dataclass_json
+@dataclass 
 class Attribute(ModelElement):
     is_static: Optional[str] = None
     type: Optional[str] = None
 
     @classmethod
-    def from_dict(cls, parent: ModelElement, node: Dict) -> "Attribute":
-        attribute = super().from_dict(parent, node)
+    def from_xmi_dict(cls, parent: ModelElement, node: Dict) -> "Attribute":
+        attribute = super().from_xmi_dict(parent, node)
         attribute.is_static = node.get("@isStatic")
         attribute.type = node.get("@type")
 
         return attribute
     
+@dataclass_json
 @dataclass
 class Parameter(ModelElement):
     type: Optional[str]=None
 
     @classmethod
-    def from_dict(cls, parent: ModelElement, node: Dict) -> 'Parameter':
-        param=super().from_dict(parent, node)
+    def from_xmi_dict(cls, parent: ModelElement, node: Dict) -> 'Parameter':
+        param=super().from_xmi_dict(parent, node)
         param.type = node.get("@type")
         return param
-    
-@dataclass
+   
+@dataclass_json
+@dataclass 
 class Operation(ModelElement):
     is_static: Optional[str] = None
     is_abstract: Optional[str] = None
     parameters: Dict[str, 'Parameter'] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls, parent: ModelElement, node: Dict) -> 'Operation':
-        operation = super().from_dict(parent, node)
+    def from_xmi_dict(cls, parent: ModelElement, node: Dict) -> 'Operation':
+        operation = super().from_xmi_dict(parent, node)
+        operation.parameters={}
         operation.is_static = node.get('@isStatic')
         operation.is_abstract = node.get('@isAbstract')
 
@@ -144,7 +148,7 @@ class Operation(ModelElement):
             if isinstance(param_list,dict):
                 param_list=[param_list]
             for param in param_list:
-                parameter = Parameter.from_dict(operation, param)
+                parameter = Parameter.from_xmi_dict(operation, param)
                 operation.parameters[parameter.name] = parameter
 
         return operation
@@ -179,21 +183,44 @@ class Operation(ModelElement):
         plantuml += ")"
         return plantuml
 
+@dataclass_json
+@dataclass
+class Role(ModelElement):
+    is_navigable: Optional[str] = None
+    multiplicity: Optional[str] = None
+    aggregate: Optional[str] = None
+    type: Optional[str] = None
+    itemid: Optional[str] = None
 
+    @classmethod
+    def from_xmi_dict(cls, parent: ModelElement, node: Dict) -> "Role":
+        role = super().from_xmi_dict(parent, node)
+        role.is_navigable = node.get("@isNavigable")
+        role.multiplicity = node.get("@multiplicity")
+        role.aggregate = node.get("@aggregate")
+        role.type = node.get("@type")
+        role.itemid = node.get("@itemid")
+        return role
+
+@dataclass_json
 @dataclass
 class Class(ModelElement):
     is_abstract: Optional[str] = None
     attributes: Dict[str, Attribute] = field(default_factory=dict)
     operations: Dict[str, Operation] = field(default_factory=dict)
- 
+    roles: Dict[str, Role] = field(default_factory=dict)  
+
     @classmethod
-    def from_dict(cls, parent: ModelElement, node: Dict) -> "Class":
-        class_ = super().from_dict(parent, node)
+    def from_xmi_dict(cls, parent: ModelElement, node: Dict) -> "Class":
+        class_ = super().from_xmi_dict(parent, node)
+        class_.attributes={}
+        class_.operations={}
+        class_.roles={}
         class_.is_abstract = node.get("@isAbstract")
         # Process attributes
         for attr_list in node.get("attributes", {}).values():
             for attr in attr_list:
-                attribute = Attribute.from_dict(class_, attr)
+                attribute = Attribute.from_xmi_dict(class_, attr)
                 class_.attributes[attribute.name] = attribute
     
         # Process operations
@@ -201,9 +228,15 @@ class Class(ModelElement):
             if isinstance(op_list,dict):
                 op_list=[op_list]
             for op in op_list:
-                operation = Operation.from_dict(class_, op)
+                operation = Operation.from_xmi_dict(class_, op)
                 class_.operations[operation.name] = operation
 
+        for role_list in node.get('roles', {}).values():
+            if isinstance(role_list,dict):
+                role_list=[role_list]
+            for role_node in role_list:
+                role=Role.from_xmi_dict(class_, role_node)
+                class_.roles[role.name] = role
         return class_
     
     def as_plantuml(self, indentation=""):
@@ -238,15 +271,14 @@ end note
 """
         return plantuml
     
-
+@dataclass_json
 @dataclass
 class Package(ModelElement):
-    packages: Dict[str, "Package"] = field(default_factory=dict)
-    packages_by_name: Dict[str, "Package"] = field(default_factory=dict)
+    packages: Dict[str, "Package"] = field(default_factory=dict) 
     classes: Dict[str, "Class"] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls, parent: ModelElement, node: Dict) -> "Package":
+    def from_xmi_dict(cls, parent: ModelElement, node: Dict) -> "Package":
         """
         Create a Package instance from a dictionary.
 
@@ -262,17 +294,19 @@ class Package(ModelElement):
         else:
             pnode = node
 
-        package = super().from_dict(parent, pnode)
-
+        package = super().from_xmi_dict(parent, pnode)
+        package.classes={}
+        package.packages={}
+        package.packages_by_name={}
         # Process classes
         for cl_list in pnode.get("classes", {}).values():
             for cl in cl_list:
-                class_ = Class.from_dict(package, cl)
+                class_ = Class.from_xmi_dict(package, cl)
                 package.classes[class_.name] = class_
 
         # Process sub-packages
         for sp in pnode.get("packages", {}).values():
-            sub_package = Package.from_dict(package, sp)
+            sub_package = Package.from_xmi_dict(package, sp)
             package.packages[sub_package.id] = sub_package
             package.packages_by_name[sub_package.name] = sub_package
         return package
@@ -306,7 +340,8 @@ end note
 """
         return plantuml
 
-
+@dataclass_json
+@dataclass
 class Model(Package):
     """
     Model with option to read from
@@ -337,7 +372,7 @@ class Model(Package):
             Model: the Model instance
         """
         data = cls.raw_read_xmi_json(file_path)
-        model = cls.from_dict(None, data)
+        model = cls.from_xmi_dict(None, data)
         return model
 
     def to_plant_uml(self) -> str:

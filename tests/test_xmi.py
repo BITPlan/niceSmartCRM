@@ -3,7 +3,6 @@ Created on 2024-01-13
 
 @author: wf
 """
-
 from pathlib import Path
 
 from ngwidgets.basetest import Basetest
@@ -37,8 +36,12 @@ class TestXMI(Basetest):
         plant_uml = model.to_plant_uml()
         if self.debug:
             print(plant_uml)
-        # Write PlantUML to /tmp/smartcrml.puml
-        output_file_path = "/tmp/smartcrm.puml"
-        with open(output_file_path, "w") as output_file:
-            output_file.write(plant_uml)
+        xmi_json=model.to_json()
+        for file_path,text in [
+            ("/tmp/smartcrm.puml",plant_uml),
+            ("/tmp/smartcrm_xmi.json",xmi_json)
+        ]:
+            with open(file_path, "w") as output_file:
+                output_file.write(text)
+                
 
