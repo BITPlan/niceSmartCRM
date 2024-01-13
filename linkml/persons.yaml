@@ -1,3 +1,4 @@
-# person record
-person_number: wf04002101
-kind: contact
+# person records
+persons:
+  - person_number: wf04002101
+    kind: contact

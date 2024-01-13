@@ -1,6 +1,8 @@
 #!/bin/bash
 # WF 2024-01-13
-# see https://linkml.io/linkml/intro/tutorial01.html
+# see 
+#   - https://linkml.io/linkml/intro/tutorial01.html
+#   - https://linkml.io/linkml/intro/tutorial02.html
 entity="person"
 entity_plural="persons"
 link_ml="${entity}_linkml.yaml"
@@ -8,7 +10,11 @@ link_ml="${entity}_linkml.yaml"
 gen-json-schema $link_ml > "${entity}_schema.json"
 jq . person_schema.json
 
+linkml-convert -s $link_ml "${entity_plural}.yaml" -t json > "${entity_plural}.json"
 linkml-validate -s $link_ml "${entity_plural}.yaml"
 jq . "${entity_plural}.json"
 linkml-validate -s $link_ml "${entity_plural}.json"
 linkml-convert -s $link_ml "${entity_plural}.yaml" -t ttl > "${entity_plural}.ttl"
+yuml=$(gen-yuml -f yuml $link_ml)
+echo $yuml
+python -m webbrowser '$yuml'&

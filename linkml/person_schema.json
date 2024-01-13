@@ -13,12 +13,34 @@
             },
             "title": "Person",
             "type": "object"
+        },
+        "Persons": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "persons": {
+                    "items": {
+                        "$ref": "#/$defs/Person"
+                    },
+                    "type": "array"
+                }
+            },
+            "title": "Persons",
+            "type": "object"
         }
     },
     "$id": "https://smartcrm.bitplan.com/linkml/person",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": true,
     "metamodel_version": "1.7.0",
+    "properties": {
+        "persons": {
+            "items": {
+                "$ref": "#/$defs/Person"
+            },
+            "type": "array"
+        }
+    },
     "title": "person",
     "type": "object",
     "version": null

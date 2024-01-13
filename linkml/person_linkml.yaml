@@ -13,4 +13,12 @@ classes:
   Person:
     attributes:
       person_number:
+        identifier: true
       kind:
+  Persons:
+    tree_root: true
+    attributes:
+      persons:
+        multivalued: true
+        inlined_as_list: true
+        range: Person
