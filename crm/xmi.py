@@ -6,7 +6,7 @@ Created on 2024-01-14
 import json
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 import textwrap
 
 @dataclass_json
@@ -53,21 +53,21 @@ class ModelElement:
         """
         short_name=ModelElement.as_short_name(self.name)
         return short_name
-    
+
     def multi_line_doc(self, limit: int) -> str:
         """
         Returns the documentation as a multiline string with a limited length per line.
         Lines are broken at whitespace.
-        
+
         :param limit: The maximum length of each line.
         :return: Multiline string.
         """
         text='\n'.join(textwrap.wrap(self.documentation, width=limit))
         return text
-    
+
     def add_to_lookup(self,lookup:Dict):
         lookup[self.id]=self
-    
+
     @classmethod
     def as_short_name(cls,name:str)->str:
         if name is None:
@@ -81,7 +81,7 @@ class ModelElement:
         Create a ModelElement instance from a dictionary.
 
         Args:
-            parent(ModelElement): the parent ModelElement or None for the Model itself
+            parent (ModelElement): the parent ModelElement or None for the Model itself
             node (Dict): A dictionary representing a ModelElement.
 
         Returns:
@@ -105,9 +105,9 @@ class ModelElement:
 
     def as_plantuml(self, _indentation=""):
         return ""
-   
+
 @dataclass_json
-@dataclass 
+@dataclass
 class Attribute(ModelElement):
     is_static: Optional[str] = None
     type: Optional[str] = None
@@ -119,7 +119,7 @@ class Attribute(ModelElement):
         attribute.type = node.get("@type")
 
         return attribute
-    
+
 @dataclass_json
 @dataclass
 class Parameter(ModelElement):
@@ -130,9 +130,9 @@ class Parameter(ModelElement):
         param=super().from_xmi_dict(parent, node)
         param.type = node.get("@type")
         return param
-   
+
 @dataclass_json
-@dataclass 
+@dataclass
 class Operation(ModelElement):
     is_static: Optional[str] = None
     is_abstract: Optional[str] = None
@@ -155,8 +155,8 @@ class Operation(ModelElement):
                 operation.parameters[parameter.name] = parameter
 
         return operation
-    
-    def as_plantuml(self, indentation=""):
+
+    def as_plantuml(self, indentation="")->str:
         """
         Generate PlantUML representation for this Operation.
 
@@ -167,7 +167,7 @@ class Operation(ModelElement):
             str: The PlantUML representation for this Operation.
         """
         plantuml = f"{indentation}{self.short_name}("
-        
+
         # Add parameters
         params = []
         return_type=None
@@ -178,7 +178,7 @@ class Operation(ModelElement):
                 params.append(param_str)
             else:
                 return_type=type_short
-                
+
         # Handle return type
         if return_type:
             params.append(f"return: {return_type}")
@@ -211,7 +211,7 @@ class Class(ModelElement):
     is_abstract: Optional[str] = None
     attributes: Dict[str, Attribute] = field(default_factory=dict)
     operations: Dict[str, Operation] = field(default_factory=dict)
-    roles: Dict[str, Role] = field(default_factory=dict)  
+    roles: Dict[str, Role] = field(default_factory=dict)
 
     @classmethod
     def from_xmi_dict(cls, parent: ModelElement, node: Dict) -> "Class":
@@ -225,7 +225,7 @@ class Class(ModelElement):
             for attr in attr_list:
                 attribute = Attribute.from_xmi_dict(class_, attr)
                 class_.attributes[attribute.name] = attribute
-    
+
         # Process operations
         for op_list in node.get('operations', {}).values():
             if isinstance(op_list,dict):
@@ -241,7 +241,7 @@ class Class(ModelElement):
                 role=Role.from_xmi_dict(class_, role_node)
                 class_.roles[role.name] = role
         return class_
-    
+
     def add_to_lookup(self, lookup: Dict):
         super().add_to_lookup(lookup)  # Add the class itself
         for attribute in self.attributes.values():  # Add all attributes
@@ -250,8 +250,8 @@ class Class(ModelElement):
             operation.add_to_lookup(lookup)
         for role in self.roles.values():  # Add all roles
             role.add_to_lookup(lookup)
-    
-    def as_plantuml(self, indentation=""):
+
+    def as_plantuml(self, indentation:str ="")->str:
         """
         Generate PlantUML representation for this Class and its contents.
 
@@ -268,7 +268,7 @@ class Class(ModelElement):
             attr_type=attr.type
             if "enum" in attr_type:
                 attr_type="enum"
-            # [[{{{attr.documentation}}} {attr.short_name} ]] 
+            # [[{{{attr.documentation}}} {attr.short_name} ]]
             plantuml += f"{indentation}  {attr.short_name}: {attr_type}\n"
 
         # Add operations
@@ -282,11 +282,11 @@ class Class(ModelElement):
 end note
 """
         return plantuml
-    
+
 @dataclass_json
 @dataclass
 class Package(ModelElement):
-    packages: Dict[str, "Package"] = field(default_factory=dict) 
+    packages: Dict[str, "Package"] = field(default_factory=dict)
     classes: Dict[str, "Class"] = field(default_factory=dict)
 
     @classmethod
@@ -322,15 +322,15 @@ class Package(ModelElement):
             package.packages[sub_package.id] = sub_package
             package.packages_by_name[sub_package.name] = sub_package
         return package
-    
+
     def add_to_lookup(self, lookup: Dict):
         super().add_to_lookup(lookup)  # Add the package itself
         for sub_package in self.packages.values():  # Add all sub-packages
             sub_package.add_to_lookup(lookup)
         for class_ in self.classes.values():  # Add all classes
             class_.add_to_lookup(lookup)
-    
-    def as_plantuml(self, indentation=""):
+
+    def as_plantuml(self, indentation="")->str:
         """
         Generate PlantUML representation for this Package and its contents.
 
@@ -373,19 +373,19 @@ class Model(Package):
         read the XMI file which has been converted to JSON with xq
 
         Args:
-            file_path(str): the file_path to read from
+            file_path (str): the file_path to read from
         """
         with open(file_path, "r") as file:
             data = json.load(file)
         return data
 
     @classmethod
-    def from_xmi_json(cls, file_path) -> "XMI":
+    def from_xmi_json(cls, file_path:str) -> "Model":
         """
         read the XMI file which has been converted to JSON with xq
 
         Args:
-            file_path(str): the file_path to read from
+            file_path (str): the file_path to read from
 
         Returns:
             Model: the Model instance
@@ -394,18 +394,18 @@ class Model(Package):
         model = cls.from_xmi_dict(None, data)
         model.create_lookup()
         return model
-    
+
     def create_lookup(self):
         """
         create the lookup dict
         """
         self.lookup={}
         self.add_to_lookup(self.lookup)
-        
+
     def as_plantuml(self, indentation=""):
         plant_uml=super().as_plantuml(indentation)
         for _model_id,element in self.lookup.items():
-     
+
             if isinstance(element,Role):
                 l_multi=""
                 r_multi=""
@@ -418,10 +418,11 @@ class Model(Package):
                     else:
                         l_multi=multi_parts[0]
                     l_multi=f'"{l_multi}"'
-                   
-                relation_plantuml = f"{element.parent.short_name} {l_multi} -- {r_multi} {element.type} : {element.short_name}"               
+
+                relation_plantuml = f"{element.parent.short_name} {l_multi} -- {r_multi} {element.type} : {element.short_name}"
                 plant_uml += f"{indentation} {relation_plantuml}\n"
         return plant_uml
+
     def to_plant_uml(self) -> str:
         """
         Generate a PlantUML representation of the model.
@@ -431,7 +432,7 @@ class Model(Package):
         """
         skinparams="""
 ' BITPlan Corporate identity skin params
-' Copyright (c) 2015-2023 BITPlan GmbH
+' Copyright (c) 2015-2024 BITPlan GmbH
 ' see http://wiki.bitplan.com/PlantUmlSkinParams#BITPlanCI
 ' skinparams generated by com.bitplan.restmodelmanager
 skinparam note {
@@ -513,5 +514,3 @@ hide circle
         plant_uml += self.as_plantuml("")
         plant_uml += "@enduml"
         return plant_uml
-
-

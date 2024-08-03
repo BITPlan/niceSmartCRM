@@ -5,8 +5,7 @@ Created on 2024-01-13
 @author: wf
 """
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
-from urllib.parse import quote_plus
+from typing import Any, Dict, List
 
 import pymysql
 import yaml

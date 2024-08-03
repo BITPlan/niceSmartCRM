@@ -3,17 +3,14 @@ Created on 2024-01-12
 
 @author: wf
 """
-from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict, List
-
-from dataclasses_json import dataclass_json
+from ngwidgets.yamlable import lod_storable
 
 from crm.em import EntityManager
 
 
-@dataclass_json
-@dataclass
+@lod_storable
 class Organization:
     kind: str
     industry: str
@@ -94,8 +91,7 @@ class Organizations(EntityManager):
         return org_list
 
 
-@dataclass_json
-@dataclass
+@lod_storable
 class Person:
     kind: str
     created_at: datetime

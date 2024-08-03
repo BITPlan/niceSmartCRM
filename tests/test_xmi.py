@@ -30,7 +30,7 @@ class TestXMI(Basetest):
 
     def test_xmi_from_xmi_json(self):
         """
-        test reading xmi file to XMI struture
+        test reading xmi file to XMI structure
         """
         model = Model.from_xmi_json(self.xmi_json_path)
         verbose=False
@@ -47,5 +47,3 @@ class TestXMI(Basetest):
         ]:
             with open(file_path, "w") as output_file:
                 output_file.write(text)
-                
-
