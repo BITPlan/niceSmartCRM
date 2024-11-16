@@ -1,0 +1,38 @@
+#
+# CRM graph schema
+#
+#  WF 2024-11-16
+#
+node_id_type_name: str
+
+#
+# configuration of available node types
+#
+node_type_configs:
+  NodeTypeConfig:
+    label: NodeTypeConfig
+    #  https://fonts.google.com/icons?icon.set=Material+Icons
+    icon: schema
+    key_field: label
+    dataclass_name: mogwai.schema.graph_schema.NodeTypeConfig
+    display_name: Node Type
+    display_order: 40
+    description: Configuration for a graph node type
+
+  Organization:
+    label: Organization
+    icon: business
+    key_field: name
+    dataclass_name: crm.crm_core.Organization
+    display_order: 10
+    display_name: Organization
+    description: An Organization
+
+  Person:
+    label: Person
+    icon: person
+    key_field: name
+    dataclass_name: crm.crm_core.Person
+    display_order: 10
+    display_name: Person
+    description: A person

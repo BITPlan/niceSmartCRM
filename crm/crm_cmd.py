@@ -8,7 +8,7 @@ from argparse import ArgumentParser
 
 from ngwidgets.cmd import WebserverCmd
 
-from crm.crm_core import CRM
+from crm.em import CRM
 from crm.crm_web import CrmWebServer
 
 

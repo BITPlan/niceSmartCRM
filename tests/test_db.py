@@ -14,7 +14,7 @@ class TestDB(Basetest):
     test Database access layer
     """
 
-    def setUp(self, debug=False, profile=True):
+    def setUp(self, debug=True, profile=True):
         Basetest.setUp(self, debug=debug, profile=profile)
         self.db = DB()
 
@@ -41,4 +41,6 @@ class TestDB(Basetest):
         """
         test showing all tables
         """
-        _results = self.check_query("SHOW TABLES", 25)
+        results = self.check_query("SHOW TABLES", 25)
+        if self.debug:
+            print(results)

@@ -17,7 +17,7 @@ class Version:
     name = "niceSmartCRM"
     version = crm.__version__
     date = "2024-01-12"
-    updated = "2024-01-12"
+    updated = "2024-11-16"
     description = "nicegui based Customer Relationship Management"
 
     authors = "Wolfgang Fahl"

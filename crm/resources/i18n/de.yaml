@@ -1,0 +1,8 @@
+#
+# Internationalization of crm
+# WF 2014-10-21
+#
+de:
+  person_list: "Personen"
+  organization_list: "Organizationen"
+  nodetypeconfig_list: "Knoten"
