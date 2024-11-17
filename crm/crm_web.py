@@ -8,9 +8,7 @@ import i18n
 from crm.i18n_config import I18nConfig
 from ngwidgets.input_webserver import InputWebserver, InputWebSolution
 from ngwidgets.webserver import WebserverConfig
-from nicegui import Client, ui, run
-from ngwidgets.lod_grid import ListOfDictsGrid, GridConfig
-from crm.em import CRM
+from nicegui import Client, ui
 from crm.db import DB
 from crm.crm_core import Organizations, Persons
 from crm.version import Version
@@ -153,10 +151,14 @@ class CrmWebServer(InputWebserver):
 
         for entity_class in (Organizations, Persons):
             entities = entity_class()
+            node_name=entities.entity_name
+            if node_name=="Organisation":
+                node_name="Organization"
             lod = entities.from_db(self.db)
-            for record in lod:
+            for index,record in enumerate(lod):
                 _node = self.graph.add_labeled_node(
-                    entities.entity_name,
-                    name=entities.entity_name,
+                    node_name,
+                    name=f"{node_name}-{index}",
                     properties=record
                 )
+            print (f"loaded {len(lod)} {entities.entity_name} records")

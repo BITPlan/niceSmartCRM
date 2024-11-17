@@ -4,13 +4,34 @@ Created on 2024-01-12
 @author: wf
 """
 from datetime import datetime
-from typing import Dict, List
-from ngwidgets.yamlable import lod_storable
+from typing import Dict, Any, TypeVar, Optional
+from dataclasses import dataclass
 
-from crm.em import EntityManager
+T = TypeVar('T')
 
+class TypeConverter:
+    """Helper class for type conversions"""
 
-@lod_storable
+    @staticmethod
+    def to_datetime(date_value: Any) -> Optional[datetime]:
+        """Convert a value to a datetime object."""
+        if date_value is None:
+            return None
+        if isinstance(date_value, str):
+            return datetime.fromisoformat(date_value) if date_value else None
+        return date_value
+
+    @staticmethod
+    def to_int(num_str: str) -> Optional[int]:
+        """Convert a string to an integer."""
+        if num_str is None:
+            return None
+        try:
+            return int(num_str)
+        except ValueError:
+            return 0
+
+@dataclass
 class Organization:
     kind: str
     industry: str
@@ -37,61 +58,37 @@ class Organization:
     website: str
     importance: str
 
+    @classmethod
+    def from_smartcrm(cls, data: Dict) -> 'Organization':
+        """Convert SmartCRM data dictionary to Organization instance."""
+        return cls(
+            kind=data.get("art"),
+            industry=data.get("Branche"),
+            created_at=TypeConverter.to_datetime(data.get("createdAt")),
+            data_origin=data.get("DatenHerkunft"),
+            created_by=data.get("ErstelltVon"),
+            country=data.get("Land"),
+            last_modified=TypeConverter.to_datetime(data.get("lastModified")),
+            logo=data.get("logo", ""),
+            employee_count=TypeConverter.to_int(data.get("Mitarbeiterzahl")),
+            organization_number=data.get("OrganisationNummer"),
+            city=data.get("Ort"),
+            postal_code=data.get("PLZ"),
+            po_box=data.get("Postfach"),
+            sales_estimate=TypeConverter.to_int(data.get("salesEstimate")),
+            sales_rank=TypeConverter.to_int(data.get("salesRank")),
+            location_name=data.get("Standort"),
+            phone=data.get("Telefon"),
+            revenue=TypeConverter.to_int(data.get("Umsatz")),
+            revenue_probability=TypeConverter.to_int(data.get("UmsatzWahrscheinlichkeit")),
+            revenue_potential=TypeConverter.to_int(data.get("Umsatzpotential")),
+            country_dialing_code=data.get("VorwahlLand"),
+            city_dialing_code=data.get("VorwahlOrt"),
+            website=data.get("Web"),
+            importance=data.get("Wichtigkeit")
+        )
 
-class Organizations(EntityManager):
-    """
-    get organizations
-    """
-
-    def __init__(self):
-        super().__init__(entity_name="Organisation")
-
-    def from_smartcrm(self, smartcrm_org_lod: List[Dict]) -> List[Dict]:
-        """
-        Convert a list of organizations from the smartcrm_org_lod format to a list of dictionaries
-        with appropriate field names and types.
-
-        Args:
-            smartcrm_org_lod (List[Dict]): List of organizations in smartcrm_org_lod format.
-
-        Returns:
-            List[Dict]: A list of dictionaries with converted field names and types.
-        """
-        org_list = []
-        for org in smartcrm_org_lod:
-            converted_org = {
-                "kind": org.get("art"),
-                "industry": org.get("Branche"),
-                "created_at": self._convert_to_datetime(org.get("createdAt")),
-                "data_origin": org.get("DatenHerkunft"),
-                "created_by": org.get("ErstelltVon"),
-                "country": org.get("Land"),
-                "last_modified": self._convert_to_datetime(org.get("lastModified")),
-                "logo": org.get("logo", ""),
-                "employee_count": self._convert_to_int(org.get("Mitarbeiterzahl")),
-                "organization_number": org.get("OrganisationNummer"),
-                "city": org.get("Ort"),
-                "postal_code": org.get("PLZ"),
-                "po_box": org.get("Postfach"),
-                "sales_estimate": self._convert_to_int(org.get("salesEstimate")),
-                "sales_rank": self._convert_to_int(org.get("salesRank")),
-                "location_name": org.get("Standort"),
-                "phone": org.get("Telefon"),
-                "revenue": self._convert_to_int(org.get("Umsatz")),
-                "revenue_probability": self._convert_to_int(
-                    org.get("UmsatzWahrscheinlichkeit")
-                ),
-                "revenue_potential": self._convert_to_int(org.get("Umsatzpotential")),
-                "country_dialing_code": org.get("VorwahlLand"),
-                "city_dialing_code": org.get("VorwahlOrt"),
-                "website": org.get("Web"),
-                "importance": org.get("Wichtigkeit"),
-            }
-            org_list.append(converted_org)
-        return org_list
-
-
-@lod_storable
+@dataclass
 class Person:
     kind: str
     created_at: datetime
@@ -110,31 +107,25 @@ class Person:
     language: str
     subid: int
 
+    @classmethod
+    def from_smartcrm(cls, data: Dict) -> 'Person':
+        """Convert SmartCRM data dictionary to Person instance."""
+        return cls(
+            kind=data.get("Art"),
+            created_at=TypeConverter.to_datetime(data.get("createdAt")),
+            data_origin=data.get("DatenHerkunft"),
+            email=data.get("email"),
+            created_by=data.get("ErstelltVon"),
+            comment=data.get("Kommentar"),
+            last_modified=TypeConverter.to_datetime(data.get("lastModified")),
+            name=data.get("Name"),
+            first_name=data.get("Vorname"),
+            personal=data.get("perDu") == "true",
+            person_number=data.get("PersonNummer"),
+            sales_estimate=TypeConverter.to_int(data.get("salesEstimate")),
+            sales_rank=TypeConverter.to_int(data.get("salesRank")),
+            gender=data.get("sex"),
+            language=data.get("Sprache"),
+            subid=TypeConverter.to_int(data.get("subid"))
+        )
 
-class Persons(EntityManager):
-    def __init__(self):
-        super().__init__(entity_name="Person")
-
-    def from_smartcrm(self, smartcrm_person_lod: List[Dict]) -> List[Dict]:
-        person_list = []
-        for person in smartcrm_person_lod:
-            converted_person = {
-                "kind": person.get("Art"),
-                "created_at": self._convert_to_datetime(person.get("createdAt")),
-                "data_origin": person.get("DatenHerkunft"),
-                "email": person.get("email"),
-                "created_by": person.get("ErstelltVon"),
-                "comment": person.get("Kommentar"),
-                "last_modified": self._convert_to_datetime(person.get("lastModified")),
-                "name": person.get("Name"),
-                "first_name": person.get("Vorname"),
-                "personal": person.get("perDu") == "true",
-                "person_number": person.get("PersonNummer"),
-                "sales_estimate": self._convert_to_int(person.get("salesEstimate")),
-                "sales_rank": self._convert_to_int(person.get("salesRank")),
-                "gender": person.get("sex"),
-                "language": person.get("Sprache"),
-                "subid": self._convert_to_int(person.get("subid")),
-            }
-            person_list.append(converted_person)
-        return person_list
