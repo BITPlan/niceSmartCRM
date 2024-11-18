@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List
 from crm.db import DB
-from crm.crm_core import Organization, Person, Contact
+from crm.crm_core import Organization, Person,Invoice, Contact
 
 @dataclass
 class Topic:
@@ -52,6 +52,13 @@ class SmartCRMAdapter:
                 dataclass=Contact,
                 table_name="Kontakt",
                 node_path="KontaktManager/kontakts/Kontakt",
+            ),
+            smartCRMTopic(
+                name="Invoice",
+                plural_name="invoices",
+                dataclass=Invoice,
+                table_name="Rechnung",
+                node_path="RechnungManager/rechnungs/Rechnung",
             )
         ]
         return topics

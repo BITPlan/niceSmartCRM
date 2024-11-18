@@ -39,9 +39,20 @@ node_type_configs:
 
   Contact:
     label: Contact
-    icon: person
+    icon: contact_page
     key_field: contact_number
     dataclass_name: crm.crm_core.Contact
     display_order: 20
     display_name: Contact
     description: a Contact
+
+  Invoice:
+    label: Invoice
+    icon: receipt
+    key_field: invoice_id
+    dataclass_name: crm.crm_core.Invoice
+    display_order: 40
+    display_name: Invoice
+    description: an Invoice
+
+

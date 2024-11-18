@@ -176,3 +176,46 @@ class Contact:
             followup=data.get("Wiedervorlage"),
             created_at=data.get("createdAt")
         )
+
+@dataclass
+class Invoice:
+    invoice_id: str
+    organization_number: Optional[str]
+    comment: Optional[str]
+    paid_at: Optional[datetime]
+    gross_amount: Optional[float]
+    deleted_at: Optional[datetime]
+    created_by: Optional[str]
+    last_modified: Optional[datetime]
+    net_amount: Optional[float]
+    invoice_date: Optional[datetime]
+    invoice_number: Optional[str]
+    year_assignment: Optional[str]
+    month_assignment: Optional[str]
+    project_number: Optional[str]
+    division: Optional[str]
+    payment_statement: Optional[str]
+    document: Optional[str]
+
+    @classmethod
+    def from_smartcrm(cls, data: Dict) -> 'Invoice':
+        """Convert SmartCRM data dictionary to Invoice instance."""
+        return cls(
+            invoice_id=data.get("rechnungsID"),
+            organization_number=data.get("Auftraggeber_OrganisationNummer"),
+            comment=data.get("bemerkung"),
+            paid_at=TypeConverter.to_datetime(data.get("bezahltAm")),
+            gross_amount=data.get("brutto"),
+            deleted_at=TypeConverter.to_datetime(data.get("deletedAt")),
+            created_by=data.get("erstelltVon"),
+            last_modified=TypeConverter.to_datetime(data.get("lastmodified")),
+            net_amount=data.get("netto"),
+            invoice_date=TypeConverter.to_datetime(data.get("rechnungsdatum")),
+            invoice_number=data.get("rechnungsnummer"),
+            year_assignment=data.get("zuordnungJahr"),
+            month_assignment=data.get("zuordnungMonat"),
+            project_number=data.get("ZuordnungProjekt_ProjektNummer"),
+            division=data.get("zuordnungSparte"),
+            payment_statement=data.get("bezahltAuszug"),
+            document=data.get("document")
+        )
