@@ -19,31 +19,6 @@ class TestCRM(Basetest):
     def setUp(self, debug=True, profile=True):
         Basetest.setUp(self, debug=debug, profile=profile)
         self.db = DB()
-        # define entity types
-        self.topics = [
-            smartCRMTopic(
-                name="Organization",
-                plural_name="organizations",
-                dataclass=Organization,
-                table_name="Organisation",
-                node_path="OrganisationManager/organisations/Organisation",
-            ),
-            smartCRMTopic(
-                name="Person",
-                plural_name="persons",
-                dataclass=Person,
-                table_name="Person",
-                node_path="PersonManager/persons/Person",
-            ),
-            smartCRMTopic(
-                name="Contact",
-                plural_name="contacts",
-                dataclass=Contact,
-                table_name="Kontakt",
-                node_path="KontaktManager/kontakts/Kontakt",
-            )
-        ]
-
 
 
     def show_lod(self, topic: Topic, lod: List, limit: int = 3):
@@ -58,7 +33,7 @@ class TestCRM(Basetest):
         """
         debug = self.debug
         debug = True
-        for topic in self.topics:
+        for topic in SmartCRMAdapter.get_topics():
             adapter = SmartCRMAdapter(topic=topic)
             converter=lambda lod: [topic.dataclass.from_smartcrm(record) for record in lod]
             lod = adapter.from_json_file(converter=converter)

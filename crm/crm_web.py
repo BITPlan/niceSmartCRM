@@ -10,7 +10,7 @@ from ngwidgets.input_webserver import InputWebserver, InputWebSolution
 from ngwidgets.webserver import WebserverConfig
 from nicegui import Client, ui
 from crm.db import DB
-from crm.crm_core import Organizations, Persons
+from crm.smartcrm_adapter import SmartCRMAdapter
 from crm.version import Version
 from lodstorage.persistent_log import Log
 from mogwai.schema.graph_schema import GraphSchema
@@ -149,16 +149,14 @@ class CrmWebServer(InputWebserver):
         self.schema.add_to_graph(self.graph)
         self.db = DB()
 
-        for entity_class in (Organizations, Persons):
-            entities = entity_class()
-            node_name=entities.entity_name
-            if node_name=="Organisation":
-                node_name="Organization"
-            lod = entities.from_db(self.db)
+        topics = SmartCRMAdapter.get_topics()
+        for topic in topics:
+            adapter = SmartCRMAdapter(topic=topic)
+            lod = adapter.from_db(self.db)
             for index,record in enumerate(lod):
                 _node = self.graph.add_labeled_node(
-                    node_name,
-                    name=f"{node_name}-{index}",
+                    topic.name,
+                    name=f"{topic.name}-{index}",
                     properties=record
                 )
-            print (f"loaded {len(lod)} {entities.entity_name} records")
+            print (f"loaded {len(lod)} {topic.name} records")

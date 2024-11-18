@@ -8,8 +8,8 @@ from argparse import ArgumentParser
 
 from ngwidgets.cmd import WebserverCmd
 
-from crm.smartcrm_adapter import CRM
 from crm.crm_web import CrmWebServer
+from crm.smartcrm_adapter import SmartCRMAdapter
 
 
 class CrmCmd(WebserverCmd):
@@ -31,7 +31,7 @@ class CrmCmd(WebserverCmd):
         parser.add_argument(
             "-rp",
             "--root_path",
-            default=CRM.root_path(),
+            default=SmartCRMAdapter.root_path(),
             help="path to example dcm definition files [default: %(default)s]",
         )
         return parser

@@ -26,13 +26,22 @@ node_type_configs:
     dataclass_name: crm.crm_core.Organization
     display_order: 10
     display_name: Organization
-    description: An Organization
+    description: an Organization
 
   Person:
     label: Person
     icon: person
     key_field: name
     dataclass_name: crm.crm_core.Person
-    display_order: 10
+    display_order: 20
     display_name: Person
-    description: A person
+    description: a person
+
+  Contact:
+    label: Contact
+    icon: person
+    key_field: contact_number
+    dataclass_name: crm.crm_core.Contact
+    display_order: 20
+    display_name: Contact
+    description: a Contact

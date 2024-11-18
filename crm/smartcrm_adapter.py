@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List
 from crm.db import DB
+from crm.crm_core import Organization, Person, Contact
 
 @dataclass
 class Topic:
@@ -26,6 +27,34 @@ class SmartCRMAdapter:
 
     def __init__(self, topic: smartCRMTopic):
         self.topic=topic
+
+    @classmethod
+    def get_topics(cls)->List[smartCRMTopic]:
+        # define entity types
+        topics = [
+            smartCRMTopic(
+                name="Organization",
+                plural_name="organizations",
+                dataclass=Organization,
+                table_name="Organisation",
+                node_path="OrganisationManager/organisations/Organisation",
+            ),
+            smartCRMTopic(
+                name="Person",
+                plural_name="persons",
+                dataclass=Person,
+                table_name="Person",
+                node_path="PersonManager/persons/Person",
+            ),
+            smartCRMTopic(
+                name="Contact",
+                plural_name="contacts",
+                dataclass=Contact,
+                table_name="Kontakt",
+                node_path="KontaktManager/kontakts/Kontakt",
+            )
+        ]
+        return topics
 
     def from_db(self, db: DB, converter=None) -> List:
         """Fetch entities from database with optional conversion."""
