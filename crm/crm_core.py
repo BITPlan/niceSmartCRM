@@ -129,3 +129,50 @@ class Person:
             subid=TypeConverter.to_int(data.get("subid"))
         )
 
+@dataclass
+class Contact:
+    """A CRM contact"""
+    contact_number: str  # KontaktNummer
+    email_id: Optional[str]  # eMail_EMailId
+    active: Optional[str]  # aktiv
+    contact_person: Optional[str]  # Ansprechpartner
+    attachment: Optional[str]
+    date: Optional[datetime]  # Datum
+    deleted_at: Optional[datetime]
+    completed: Optional[datetime]  # erledigt
+    comment: Optional[str]  # Kommentar
+    contact_type: Optional[str]  # Kontaktart
+    last_modified: Optional[datetime]
+    person_number: Optional[str]  # meinePerson_PersonNummer
+    topic: Optional[str]  # Thema
+    todo: Optional[str]
+    uid: Optional[str]
+    responsible: Optional[str]  # Verantwortlicher
+    action_number: Optional[str]  # wgAktion_AktionNummer
+    followup: Optional[datetime]  # Wiedervorlage
+    created_at: Optional[datetime]
+
+    @classmethod
+    def from_smartcrm(cls, data: Dict) -> 'Contact':
+        """Convert SmartCRM data to Contact instance"""
+        return cls(
+            contact_number=data.get("KontaktNummer"),
+            email_id=data.get("eMail_EMailId"),
+            active=data.get("aktiv"),
+            contact_person=data.get("Ansprechpartner"),
+            attachment=data.get("attachment"),
+            date=data.get("Datum"),
+            deleted_at=data.get("deletedAt"),
+            completed=data.get("erledigt"),
+            comment=data.get("Kommentar"),
+            contact_type=data.get("Kontaktart"),
+            last_modified=data.get("lastmodified"),
+            person_number=data.get("meinePerson_PersonNummer"),
+            topic=data.get("Thema"),
+            todo=data.get("todo"),
+            uid=data.get("uid"),
+            responsible=data.get("Verantwortlicher"),
+            action_number=data.get("wgAktion_AktionNummer"),
+            followup=data.get("Wiedervorlage"),
+            created_at=data.get("createdAt")
+        )
