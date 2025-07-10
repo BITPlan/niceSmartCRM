@@ -3,11 +3,13 @@ Created on 2024-01-13
 
 @author: wf
 """
+
 import json
 
 from ngwidgets.basetest import Basetest
 
 from crm.db import DB
+
 
 class TestDB(Basetest):
     """

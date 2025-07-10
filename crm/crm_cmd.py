@@ -3,6 +3,7 @@ Created on 2024-01-12
 
 @author: wf
 """
+
 import sys
 from argparse import ArgumentParser
 
@@ -22,12 +23,6 @@ class CrmCmd(WebserverCmd):
         override the default argparser call
         """
         parser = super().getArgParser(description, version_msg)
-        parser.add_argument(
-            "-v",
-            "--verbose",
-            action="store_true",
-            help="show verbose output [default: %(default)s]",
-        )
         parser.add_argument(
             "-rp",
             "--root_path",

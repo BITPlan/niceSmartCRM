@@ -3,6 +3,7 @@ Created on 2024-01-13
 
 @author: wf
 """
+
 from pathlib import Path
 
 from ngwidgets.basetest import Basetest
@@ -33,17 +34,19 @@ class TestXMI(Basetest):
         test reading xmi file to XMI structure
         """
         model = Model.from_xmi_json(self.xmi_json_path)
-        verbose=False
+        verbose = False
         if self.debug:
             print(f"found {len(model.lookup)} model elements")
             if verbose:
-                for model_id,element in model.lookup.items():
-                    print(f"{model_id}:{element.__class__.__name__}:{element.short_name}")
+                for model_id, element in model.lookup.items():
+                    print(
+                        f"{model_id}:{element.__class__.__name__}:{element.short_name}"
+                    )
         plant_uml = model.to_plant_uml()
-        xmi_json=model.to_json(indent=2)
-        for file_path,text in [
-            ("/tmp/smartcrm.puml",plant_uml),
-            ("/tmp/smartcrm_xmi.json",xmi_json)
+        xmi_json = model.to_json(indent=2)
+        for file_path, text in [
+            ("/tmp/smartcrm.puml", plant_uml),
+            ("/tmp/smartcrm_xmi.json", xmi_json),
         ]:
             with open(file_path, "w") as output_file:
                 output_file.write(text)

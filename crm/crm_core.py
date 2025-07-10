@@ -3,11 +3,13 @@ Created on 2024-01-12
 
 @author: wf
 """
-from datetime import datetime
-from typing import Dict, Any, TypeVar, Optional
-from dataclasses import dataclass
 
-T = TypeVar('T')
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, Optional, TypeVar
+
+T = TypeVar("T")
+
 
 class TypeConverter:
     """Helper class for type conversions"""
@@ -30,6 +32,7 @@ class TypeConverter:
             return int(num_str)
         except ValueError:
             return 0
+
 
 @dataclass
 class Organization:
@@ -59,7 +62,7 @@ class Organization:
     importance: str
 
     @classmethod
-    def from_smartcrm(cls, data: Dict) -> 'Organization':
+    def from_smartcrm(cls, data: Dict) -> "Organization":
         """Convert SmartCRM data dictionary to Organization instance."""
         return cls(
             kind=data.get("art"),
@@ -80,13 +83,16 @@ class Organization:
             location_name=data.get("Standort"),
             phone=data.get("Telefon"),
             revenue=TypeConverter.to_int(data.get("Umsatz")),
-            revenue_probability=TypeConverter.to_int(data.get("UmsatzWahrscheinlichkeit")),
+            revenue_probability=TypeConverter.to_int(
+                data.get("UmsatzWahrscheinlichkeit")
+            ),
             revenue_potential=TypeConverter.to_int(data.get("Umsatzpotential")),
             country_dialing_code=data.get("VorwahlLand"),
             city_dialing_code=data.get("VorwahlOrt"),
             website=data.get("Web"),
-            importance=data.get("Wichtigkeit")
+            importance=data.get("Wichtigkeit"),
         )
+
 
 @dataclass
 class Person:
@@ -108,7 +114,7 @@ class Person:
     subid: int
 
     @classmethod
-    def from_smartcrm(cls, data: Dict) -> 'Person':
+    def from_smartcrm(cls, data: Dict) -> "Person":
         """Convert SmartCRM data dictionary to Person instance."""
         return cls(
             kind=data.get("Art"),
@@ -126,12 +132,14 @@ class Person:
             sales_rank=TypeConverter.to_int(data.get("salesRank")),
             gender=data.get("sex"),
             language=data.get("Sprache"),
-            subid=TypeConverter.to_int(data.get("subid"))
+            subid=TypeConverter.to_int(data.get("subid")),
         )
+
 
 @dataclass
 class Contact:
     """A CRM contact"""
+
     contact_number: str  # KontaktNummer
     email_id: Optional[str]  # eMail_EMailId
     active: Optional[str]  # aktiv
@@ -153,7 +161,7 @@ class Contact:
     created_at: Optional[datetime]
 
     @classmethod
-    def from_smartcrm(cls, data: Dict) -> 'Contact':
+    def from_smartcrm(cls, data: Dict) -> "Contact":
         """Convert SmartCRM data to Contact instance"""
         return cls(
             contact_number=data.get("KontaktNummer"),
@@ -174,8 +182,9 @@ class Contact:
             responsible=data.get("Verantwortlicher"),
             action_number=data.get("wgAktion_AktionNummer"),
             followup=data.get("Wiedervorlage"),
-            created_at=data.get("createdAt")
+            created_at=data.get("createdAt"),
         )
+
 
 @dataclass
 class Invoice:
@@ -198,7 +207,7 @@ class Invoice:
     document: Optional[str]
 
     @classmethod
-    def from_smartcrm(cls, data: Dict) -> 'Invoice':
+    def from_smartcrm(cls, data: Dict) -> "Invoice":
         """Convert SmartCRM data dictionary to Invoice instance."""
         return cls(
             invoice_id=data.get("rechnungsID"),
@@ -217,5 +226,5 @@ class Invoice:
             project_number=data.get("ZuordnungProjekt_ProjektNummer"),
             division=data.get("zuordnungSparte"),
             payment_statement=data.get("bezahltAuszug"),
-            document=data.get("document")
+            document=data.get("document"),
         )

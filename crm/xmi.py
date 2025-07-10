@@ -3,19 +3,20 @@ Created on 2024-01-14
 
 @author: wf
 """
+
 import json
-from dataclasses import dataclass, field
-from dataclasses_json import dataclass_json
-from typing import Dict, Optional
 import textwrap
+from dataclasses import dataclass, field
+from typing import Dict, Optional
+
+from dataclasses_json import dataclass_json
+
 
 @dataclass_json
 @dataclass
 class TaggedValue:
     name: str
-    value: Optional[str] = field(
-        default=None
-    )
+    value: Optional[str] = field(default=None)
 
     @classmethod
     def from_xmi_dict(cls, node: Dict) -> "TaggedValue":
@@ -32,12 +33,14 @@ class TaggedValue:
         value = node.get("Value")
         return cls(name=name, value=value)
 
+
 @dataclass_json
 @dataclass
 class ModelElement:
     """
     Base model element class
     """
+
     name: str
     id: str
     stereotype: str
@@ -51,7 +54,7 @@ class ModelElement:
         for name: Logical View::com::bitplan::smartCRM::Organisation::Name
         return "Name"
         """
-        short_name=ModelElement.as_short_name(self.name)
+        short_name = ModelElement.as_short_name(self.name)
         return short_name
 
     def multi_line_doc(self, limit: int) -> str:
@@ -62,17 +65,17 @@ class ModelElement:
         :param limit: The maximum length of each line.
         :return: Multiline string.
         """
-        text='\n'.join(textwrap.wrap(self.documentation, width=limit))
+        text = "\n".join(textwrap.wrap(self.documentation, width=limit))
         return text
 
-    def add_to_lookup(self,lookup:Dict):
-        lookup[self.id]=self
+    def add_to_lookup(self, lookup: Dict):
+        lookup[self.id] = self
 
     @classmethod
-    def as_short_name(cls,name:str)->str:
+    def as_short_name(cls, name: str) -> str:
         if name is None:
             return None
-        short_name=name.split("::")[-1]
+        short_name = name.split("::")[-1]
         return short_name
 
     @classmethod
@@ -94,7 +97,7 @@ class ModelElement:
             visibility=node.get("@visibility"),
             documentation=node.get("Documentation"),
         )
-        element.parent=parent
+        element.parent = parent
 
         for tv_list in node.get("taggedValues", {}).values():
             for tv in tv_list:
@@ -105,6 +108,7 @@ class ModelElement:
 
     def as_plantuml(self, _indentation=""):
         return ""
+
 
 @dataclass_json
 @dataclass
@@ -120,43 +124,45 @@ class Attribute(ModelElement):
 
         return attribute
 
+
 @dataclass_json
 @dataclass
 class Parameter(ModelElement):
-    type: Optional[str]=None
+    type: Optional[str] = None
 
     @classmethod
-    def from_xmi_dict(cls, parent: ModelElement, node: Dict) -> 'Parameter':
-        param=super().from_xmi_dict(parent, node)
+    def from_xmi_dict(cls, parent: ModelElement, node: Dict) -> "Parameter":
+        param = super().from_xmi_dict(parent, node)
         param.type = node.get("@type")
         return param
+
 
 @dataclass_json
 @dataclass
 class Operation(ModelElement):
     is_static: Optional[str] = None
     is_abstract: Optional[str] = None
-    parameters: Dict[str, 'Parameter'] = field(default_factory=dict)
+    parameters: Dict[str, "Parameter"] = field(default_factory=dict)
 
     @classmethod
-    def from_xmi_dict(cls, parent: ModelElement, node: Dict) -> 'Operation':
+    def from_xmi_dict(cls, parent: ModelElement, node: Dict) -> "Operation":
         operation = super().from_xmi_dict(parent, node)
-        operation.parameters={}
-        operation.is_static = node.get('@isStatic')
-        operation.is_abstract = node.get('@isAbstract')
+        operation.parameters = {}
+        operation.is_static = node.get("@isStatic")
+        operation.is_abstract = node.get("@isAbstract")
 
         # Process parameters
-        for param_list in node.get('parameters', {}).values():
+        for param_list in node.get("parameters", {}).values():
             # return parameter
-            if isinstance(param_list,dict):
-                param_list=[param_list]
+            if isinstance(param_list, dict):
+                param_list = [param_list]
             for param in param_list:
                 parameter = Parameter.from_xmi_dict(operation, param)
                 operation.parameters[parameter.name] = parameter
 
         return operation
 
-    def as_plantuml(self, indentation="")->str:
+    def as_plantuml(self, indentation="") -> str:
         """
         Generate PlantUML representation for this Operation.
 
@@ -170,14 +176,14 @@ class Operation(ModelElement):
 
         # Add parameters
         params = []
-        return_type=None
+        return_type = None
         for param_name, param in self.parameters.items():
-            type_short=ModelElement.as_short_name(param.type)
-            if not param_name.endswith("::return") and not param_name=="return":
+            type_short = ModelElement.as_short_name(param.type)
+            if not param_name.endswith("::return") and not param_name == "return":
                 param_str = f"{param.short_name}: {type_short}"
                 params.append(param_str)
             else:
-                return_type=type_short
+                return_type = type_short
 
         # Handle return type
         if return_type:
@@ -185,6 +191,7 @@ class Operation(ModelElement):
         plantuml += ", ".join(params)
         plantuml += ")"
         return plantuml
+
 
 @dataclass_json
 @dataclass
@@ -205,6 +212,7 @@ class Role(ModelElement):
         role.itemid = node.get("@itemid")
         return role
 
+
 @dataclass_json
 @dataclass
 class Class(ModelElement):
@@ -216,9 +224,9 @@ class Class(ModelElement):
     @classmethod
     def from_xmi_dict(cls, parent: ModelElement, node: Dict) -> "Class":
         class_ = super().from_xmi_dict(parent, node)
-        class_.attributes={}
-        class_.operations={}
-        class_.roles={}
+        class_.attributes = {}
+        class_.operations = {}
+        class_.roles = {}
         class_.is_abstract = node.get("@isAbstract")
         # Process attributes
         for attr_list in node.get("attributes", {}).values():
@@ -227,18 +235,18 @@ class Class(ModelElement):
                 class_.attributes[attribute.name] = attribute
 
         # Process operations
-        for op_list in node.get('operations', {}).values():
-            if isinstance(op_list,dict):
-                op_list=[op_list]
+        for op_list in node.get("operations", {}).values():
+            if isinstance(op_list, dict):
+                op_list = [op_list]
             for op in op_list:
                 operation = Operation.from_xmi_dict(class_, op)
                 class_.operations[operation.name] = operation
 
-        for role_list in node.get('roles', {}).values():
-            if isinstance(role_list,dict):
-                role_list=[role_list]
+        for role_list in node.get("roles", {}).values():
+            if isinstance(role_list, dict):
+                role_list = [role_list]
             for role_node in role_list:
-                role=Role.from_xmi_dict(class_, role_node)
+                role = Role.from_xmi_dict(class_, role_node)
                 class_.roles[role.name] = role
         return class_
 
@@ -251,7 +259,7 @@ class Class(ModelElement):
         for role in self.roles.values():  # Add all roles
             role.add_to_lookup(lookup)
 
-    def as_plantuml(self, indentation:str ="")->str:
+    def as_plantuml(self, indentation: str = "") -> str:
         """
         Generate PlantUML representation for this Class and its contents.
 
@@ -265,9 +273,9 @@ class Class(ModelElement):
 
         # Add attributes
         for _attr_name, attr in self.attributes.items():
-            attr_type=attr.type
+            attr_type = attr.type
             if "enum" in attr_type:
-                attr_type="enum"
+                attr_type = "enum"
             # [[{{{attr.documentation}}} {attr.short_name} ]]
             plantuml += f"{indentation}  {attr.short_name}: {attr_type}\n"
 
@@ -282,6 +290,7 @@ class Class(ModelElement):
 end note
 """
         return plantuml
+
 
 @dataclass_json
 @dataclass
@@ -307,9 +316,9 @@ class Package(ModelElement):
             pnode = node
 
         package = super().from_xmi_dict(parent, pnode)
-        package.classes={}
-        package.packages={}
-        package.packages_by_name={}
+        package.classes = {}
+        package.packages = {}
+        package.packages_by_name = {}
         # Process classes
         for cl_list in pnode.get("classes", {}).values():
             for cl in cl_list:
@@ -330,7 +339,7 @@ class Package(ModelElement):
         for class_ in self.classes.values():  # Add all classes
             class_.add_to_lookup(lookup)
 
-    def as_plantuml(self, indentation="")->str:
+    def as_plantuml(self, indentation="") -> str:
         """
         Generate PlantUML representation for this Package and its contents.
 
@@ -353,11 +362,12 @@ class Package(ModelElement):
             plantuml += f"{sub_package_plantuml}\n"
 
         plantuml += f"{indentation}}}\n"
-        plantuml+=f"""note top of {self.short_name}
+        plantuml += f"""note top of {self.short_name}
 {self.documentation}
 end note
 """
         return plantuml
+
 
 @dataclass_json
 @dataclass
@@ -380,7 +390,7 @@ class Model(Package):
         return data
 
     @classmethod
-    def from_xmi_json(cls, file_path:str) -> "Model":
+    def from_xmi_json(cls, file_path: str) -> "Model":
         """
         read the XMI file which has been converted to JSON with xq
 
@@ -399,25 +409,25 @@ class Model(Package):
         """
         create the lookup dict
         """
-        self.lookup={}
+        self.lookup = {}
         self.add_to_lookup(self.lookup)
 
     def as_plantuml(self, indentation=""):
-        plant_uml=super().as_plantuml(indentation)
-        for _model_id,element in self.lookup.items():
+        plant_uml = super().as_plantuml(indentation)
+        for _model_id, element in self.lookup.items():
 
-            if isinstance(element,Role):
-                l_multi=""
-                r_multi=""
-                multi=element.multiplicity
+            if isinstance(element, Role):
+                l_multi = ""
+                r_multi = ""
+                multi = element.multiplicity
                 if multi:
-                    multi_parts=multi.split("..")
-                    if len(multi_parts)==2:
-                        l_multi,r_multi=multi_parts
-                        r_multi=f'"{r_multi}"'
+                    multi_parts = multi.split("..")
+                    if len(multi_parts) == 2:
+                        l_multi, r_multi = multi_parts
+                        r_multi = f'"{r_multi}"'
                     else:
-                        l_multi=multi_parts[0]
-                    l_multi=f'"{l_multi}"'
+                        l_multi = multi_parts[0]
+                    l_multi = f'"{l_multi}"'
 
                 relation_plantuml = f"{element.parent.short_name} {l_multi} -- {r_multi} {element.type} : {element.short_name}"
                 plant_uml += f"{indentation} {relation_plantuml}\n"
@@ -430,7 +440,7 @@ class Model(Package):
         Returns:
             str: The PlantUML string.
         """
-        skinparams="""
+        skinparams = """
 ' BITPlan Corporate identity skin params
 ' Copyright (c) 2015-2024 BITPlan GmbH
 ' see http://wiki.bitplan.com/PlantUmlSkinParams#BITPlanCI
