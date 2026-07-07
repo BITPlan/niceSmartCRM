@@ -9,13 +9,23 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List
 
-from crm.crm_core import Contact, Invoice, Organization, Person
+from crm.crm_core import (
+    Action,
+    Contact,
+    Email,
+    Invoice,
+    Organization,
+    Person,
+    Project,
+    Todo,
+)
 from crm.db import DB
 
 
 @dataclass
 class Topic:
     """A generic entity / topic/ class description"""
+
     name: str
     plural_name: str
     dataclass: type
@@ -25,6 +35,7 @@ class Topic:
 class smartCRMTopic(Topic):
     table_name: str
     node_path: str  # e.g. OrganisationManager/organisations/Organisation
+    pk_field: str = ""  # English dataclass field holding the primary key
 
 
 class SmartCRMAdapter:
@@ -43,6 +54,7 @@ class SmartCRMAdapter:
                 dataclass=Organization,
                 table_name="organisation",
                 node_path="OrganisationManager/organisations/Organisation",
+                pk_field="organization_number",
             ),
             smartCRMTopic(
                 name="Person",
@@ -50,6 +62,7 @@ class SmartCRMAdapter:
                 dataclass=Person,
                 table_name="person",
                 node_path="PersonManager/persons/Person",
+                pk_field="person_number",
             ),
             smartCRMTopic(
                 name="Contact",
@@ -57,6 +70,7 @@ class SmartCRMAdapter:
                 dataclass=Contact,
                 table_name="kontakt",
                 node_path="KontaktManager/kontakts/Kontakt",
+                pk_field="contact_number",
             ),
             smartCRMTopic(
                 name="Invoice",
@@ -64,6 +78,39 @@ class SmartCRMAdapter:
                 dataclass=Invoice,
                 table_name="rechnung",
                 node_path="RechnungManager/rechnungs/Rechnung",
+                pk_field="invoice_id",
+            ),
+            smartCRMTopic(
+                name="Email",
+                plural_name="emails",
+                dataclass=Email,
+                table_name="email",
+                node_path="EMailManager/emails/EMail",
+                pk_field="email_id",
+            ),
+            smartCRMTopic(
+                name="Project",
+                plural_name="projects",
+                dataclass=Project,
+                table_name="projekt",
+                node_path="ProjektManager/projekts/Projekt",
+                pk_field="project_number",
+            ),
+            smartCRMTopic(
+                name="Action",
+                plural_name="actions",
+                dataclass=Action,
+                table_name="aktion",
+                node_path="AktionManager/aktions/Aktion",
+                pk_field="action_number",
+            ),
+            smartCRMTopic(
+                name="Todo",
+                plural_name="todos",
+                dataclass=Todo,
+                table_name="todo",
+                node_path="TodoManager/todos/Todo",
+                pk_field="todo_id",
             ),
         ]
         return topics

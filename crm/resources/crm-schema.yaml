@@ -16,7 +16,7 @@ node_type_configs:
     key_field: label
     dataclass_name: mogwai.schema.graph_schema.NodeTypeConfig
     display_name: Node Type
-    display_order: 40
+    display_order: 90
     description: Configuration for a graph node type
 
   Organization:
@@ -42,7 +42,7 @@ node_type_configs:
     icon: contact_page
     key_field: contact_number
     dataclass_name: crm.crm_core.Contact
-    display_order: 20
+    display_order: 30
     display_name: Contact
     description: a Contact
 
@@ -54,5 +54,41 @@ node_type_configs:
     display_order: 40
     display_name: Invoice
     description: an Invoice
+
+  Email:
+    label: Email
+    icon: email
+    key_field: email_id
+    dataclass_name: crm.crm_core.Email
+    display_order: 50
+    display_name: Email
+    description: an Email record
+
+  Project:
+    label: Project
+    icon: folder
+    key_field: project_number
+    dataclass_name: crm.crm_core.Project
+    display_order: 60
+    display_name: Project
+    description: a Project
+
+  Action:
+    label: Action
+    icon: campaign
+    key_field: action_number
+    dataclass_name: crm.crm_core.Action
+    display_order: 70
+    display_name: Action
+    description: an Action/Campaign
+
+  Todo:
+    label: Todo
+    icon: task_alt
+    key_field: todo_id
+    dataclass_name: crm.crm_core.Todo
+    display_order: 80
+    display_name: Todo
+    description: a Todo item
 
 

@@ -4,5 +4,11 @@
 #
 de:
   person_list: "Personen"
-  organization_list: "Organizationen"
+  organization_list: "Organisationen"
+  contact_list: "Kontakte"
+  invoice_list: "Rechnungen"
+  email_list: "E-Mails"
+  project_list: "Projekte"
+  action_list: "Aktionen"
+  todo_list: "Todos"
   nodetypeconfig_list: "Knoten"
