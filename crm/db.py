@@ -56,6 +56,7 @@ class DB:
         """
         config = {
             "host": self.config["host"],
+            "port": self.config.get("port", 3306),
             "user": self.config["user"],
             "password": self.config["password"],
             "db": self.config["name"],
