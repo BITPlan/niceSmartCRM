@@ -1,0 +1,28 @@
+# WF 2025-11-25
+# Select person by smartCRMId including e-mail
+PersonBySmartCRMId:
+  param_list:
+    - name: smartCRMId
+      type: str
+  sql: |
+    SELECT PersonNummer, Name, Vorname, email
+    FROM person
+    WHERE PersonNummer = '{{ smartCRMId }}'
+  description: >
+    Selects the person record with the matching smartCRM ID (= PersonNummer) including their email.
+
+# Ask query to find smartCRM Ids given the wiki page name (assumed stored as targetPage)
+SmartCRMIdsByPageName:
+  param_list:
+    - name: pageName
+      type: str
+  ask: |
+    {{#ask: [[Link targetPage::{{ pageName }}]]
+    |?Link target
+    |?SmartCRM Id=smartCRMId
+    |mainlabel=PageName
+    |format=table
+    |limit=100
+    }}
+  description: >
+    Retrieves smartCRM Ids by the internal wiki page name used in Link.targetPage property.
