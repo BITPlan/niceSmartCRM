@@ -18,7 +18,7 @@ class Version:
     name = "niceSmartCRM"
     version = crm.__version__
     date = "2024-01-12"
-    updated = "2024-11-16"
+    updated = "2026-07-07"
     description = "nicegui based Customer Relationship Management"
 
     authors = "Wolfgang Fahl"
@@ -27,7 +27,7 @@ class Version:
     chat_url = "https://github.com/BITPlan/niceSmartCRM/discussions"
     cm_url = "https://github.com/BITPlan/niceSmartCRM"
 
-    license = f"""Copyright 2024 contributors. All rights reserved.
+    license = f"""Copyright 2024-2026 contributors. All rights reserved.
 
   Licensed under the Apache License 2.0
   http://www.apache.org/licenses/LICENSE-2.0
