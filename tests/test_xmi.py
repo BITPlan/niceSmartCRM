@@ -19,6 +19,8 @@ class TestXMI(Basetest):
     def setUp(self, debug=True, profile=True):
         Basetest.setUp(self, debug=debug, profile=profile)
         self.xmi_json_path = f"{Path.home()}/.smartcrm/smartcrm_model.json"
+        if not Path(self.xmi_json_path).is_file():
+            self.skipTest(f"smartcrm model export not available: {self.xmi_json_path}")
 
     def test_raw_read_xmi(self):
         """
