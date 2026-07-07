@@ -357,6 +357,8 @@ class Project:
     actual_effort: Optional[int]  # istaufwand
     actual_cost: Optional[int]  # istkosten
     last_modified: Optional[datetime]
+    organization_number: Optional[str] = None  # auftraggeber_OrganisationNummer
+    responsible_person_number: Optional[str] = None  # VERANTWORTLICHER_personNummer
 
     @classmethod
     def from_smartcrm(cls, data: Dict) -> "Project":
@@ -379,6 +381,8 @@ class Project:
             actual_effort=TypeConverter.to_int(data.get("istaufwand")),
             actual_cost=TypeConverter.to_int(data.get("istkosten")),
             last_modified=TypeConverter.to_datetime(data.get("lastModified")),
+            organization_number=data.get("auftraggeber_OrganisationNummer"),
+            responsible_person_number=data.get("VERANTWORTLICHER_personNummer"),
         )
 
 
@@ -432,6 +436,7 @@ class Todo:
     status: Optional[str]
     deleted_at: Optional[datetime]
     last_modified: Optional[datetime]
+    project_number: Optional[str] = None  # meinProjekt_ProjektNummer
 
     @classmethod
     def from_smartcrm(cls, data: Dict) -> "Todo":
@@ -451,4 +456,5 @@ class Todo:
             status=data.get("status"),
             deleted_at=TypeConverter.to_datetime(data.get("deletedAt")),
             last_modified=TypeConverter.to_datetime(data.get("lastModified")),
+            project_number=data.get("meinProjekt_ProjektNummer"),
         )
