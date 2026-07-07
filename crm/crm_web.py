@@ -7,14 +7,15 @@ Created on 2024-01-10
 import os
 
 import i18n
+from basemkit.persistent_log import Log
 from mogwai.core.mogwaigraph import MogwaiGraph, MogwaiGraphConfig
 from mogwai.schema.graph_schema import GraphSchema
 from mogwai.web.node_view import NodeTableView, NodeView, NodeViewConfig
 from ngwidgets.input_webserver import InputWebserver, InputWebSolution
-from basemkit.persistent_log import Log
 from ngwidgets.webserver import WebserverConfig
-from nicegui import Client, ui
+from nicegui import Client, app, ui
 
+from crm.crm_rest import CrmRestApi
 from crm.db import DB
 from crm.i18n_config import I18nConfig
 from crm.smartcrm_adapter import SmartCRMAdapter
@@ -152,14 +153,26 @@ class CrmWebServer(InputWebserver):
 
         self.schema = GraphSchema.load(yaml_path=yaml_path)
         self.schema.add_to_graph(self.graph)
-        self.db = DB()
+        try:
+            self.db = DB()
+        except Exception as ex:
+            self.log.log(
+                "⚠️", "db", f"database not available - falling back to JSON: {ex}"
+            )
+            self.db = None
 
         topics = SmartCRMAdapter.get_topics()
         for topic in topics:
             adapter = SmartCRMAdapter(topic=topic)
-            lod = adapter.from_db(self.db)
+            if self.db is not None:
+                lod = adapter.from_db(self.db)
+            else:
+                lod = adapter.from_json_file()
             for index, record in enumerate(lod):
                 _node = self.graph.add_labeled_node(
                     topic.name, name=f"{topic.name}-{index}", properties=record
                 )
             print(f"loaded {len(lod)} {topic.name} records")
+        # read-only REST API mounted into NiceGUI's FastAPI app
+        self.rest_api = CrmRestApi(db=self.db)
+        app.include_router(self.rest_api.router)
