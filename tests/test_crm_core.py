@@ -5,6 +5,7 @@ Created on 2024-01-12
 """
 
 import json
+from pathlib import Path
 from typing import List
 
 from ngwidgets.basetest import Basetest
@@ -27,6 +28,12 @@ class TestCRM(Basetest):
             self.db = None
             self.db_error = ex
 
+    def check_json_available(self):
+        """Skip the current test if the smartcrm JSON exports are not available."""
+        json_path = Path(SmartCRMAdapter.root_path()) / "organisation.json"
+        if not json_path.is_file():
+            self.skipTest(f"smartcrm JSON exports not available: {json_path}")
+
     def show_lod(self, topic: Topic, lod: List, limit: int = 1):
         if self.debug:
             print(f"found {len(lod)} {topic.plural_name}")
@@ -44,6 +51,7 @@ class TestCRM(Basetest):
         """
         test reading and converting all entities from the JSON exports
         """
+        self.check_json_available()
         min_counts = {
             "organizations": 100,
             "persons": 100,

@@ -4,6 +4,8 @@ Created on 2026-07-07
 @author: wf
 """
 
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from ngwidgets.basetest import Basetest
@@ -19,6 +21,9 @@ class TestCrmRestApi(Basetest):
 
     def setUp(self, debug=False, profile=True):
         Basetest.setUp(self, debug=debug, profile=profile)
+        json_path = Path(SmartCRMAdapter.root_path()) / "organisation.json"
+        if not json_path.is_file():
+            self.skipTest(f"smartcrm JSON exports not available: {json_path}")
         # use the JSON exports as data source - no database needed
         self.rest_api = CrmRestApi(db=None)
         self.app = FastAPI()
