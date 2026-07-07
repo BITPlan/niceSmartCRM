@@ -1,0 +1,161 @@
+@startuml
+title smartCRM legacy model (German, MariaDB/JPA, generated 2018 by smartGENERATOR)
+
+' BITPlan Corporate identity skin params
+' Copyright (c) 2015-2026 BITPlan GmbH
+' see http://wiki.bitplan.com/PlantUmlSkinParams#BITPlanCI
+skinparam note {
+  BackGroundColor #FFFFFF
+  FontSize 12
+  ArrowColor #FF8000
+  BorderColor #FF8000
+  FontColor black
+  FontName Technical
+}
+skinparam class {
+  BackGroundColor #FFFFFF
+  FontSize 12
+  ArrowColor #FF8000
+  BorderColor #FF8000
+  FontColor black
+  FontName Technical
+}
+hide circle
+
+note as LegacyNote
+  the 8 entities of the legacy Java/Jersey/JPA system
+  sharing the MariaDB smartcrm database
+  (German names, tables in lowercase)
+end note
+
+class Organisation {
+  OrganisationNummer: String <<PK>>
+  Name: String
+  Strasse: String
+  PLZ: String
+  Ort: String
+  Land: String
+  Branche: String
+  art: String
+  Telefon: String
+  Telefax: String
+  Web: String
+  Umsatz: long
+  Mitarbeiterzahl: long
+  Kommentar: Memo
+}
+
+class Person {
+  PersonNummer: String <<PK>>
+  Name: String
+  Vorname: String
+  email: String
+  Telefon: String
+  Mobiltelefon: String
+  Anrede: String
+  Titel: String
+  Art: String
+  sex: String
+  perDu: boolean
+  Sprache: String
+  Kommentar: Memo
+}
+
+class Kontakt {
+  KontaktNummer: String <<PK>>
+  Thema: String
+  Datum: Date
+  Kontaktart: String
+  Ansprechpartner: String
+  Kommentar: Memo
+  Wiedervorlage: Date
+  aktiv: boolean
+  todo: Memo
+  Verantwortlicher: String
+  erledigt: Date
+}
+
+class EMail {
+  EMailId: String <<PK>>
+  ToAdr: String
+  CC: String
+  BCC: String
+  ReplyTo: String
+  Subject: String
+  Content: Memo
+  signature: Memo
+  Attachment: String
+  sent: boolean
+  sendDate: Date
+}
+
+class Projekt {
+  ProjektNummer: String <<PK>>
+  name: String
+  jahr: String
+  auftragsnrkunde: String
+  status: Enum
+  ziele: Memo
+  zielerrreichungsgrad: Enum
+  plananfang: Date
+  planende: Date
+  planaufwand: long
+  plankosten: long
+  istanfang: Date
+  istende: Date
+  istaufwand: long
+  istkosten: long
+  dokumentation: Memo
+}
+
+class Rechnung {
+  rechnungsID: String <<PK>>
+  rechnungsnummer: String
+  rechnungsdatum: Date
+  netto: double
+  brutto: double
+  bezahltAm: Date
+  zuordnungJahr: String
+  zuordnungMonat: String
+  zuordnungSparte: String
+  bemerkung: Memo
+}
+
+class Aktion {
+  AktionNummer: String <<PK>>
+  name: String
+  Thema: String
+  Datum: Date
+  Kontaktart: Enum
+  Ansprechpartner: String
+  kommentar: Memo
+  inhalteKopieren: boolean
+}
+
+class Todo {
+  id: String <<PK>>
+  aufgabe: Memo
+  ersteller: String
+  erstellungsdatum: Date
+  verantwortlicher: String
+  akzeptiert: boolean
+  akzeptiertAm: Date
+  wichtigkeit: Enum
+  dringlichkeit: Enum
+  plantermin: Date
+  erledigtAm: Date
+  status: Enum
+}
+
+Person "n" --> "1" Organisation : meineOrganisation_\nOrganisationNummer
+Kontakt "n" --> "1" Person : meinePerson_\nPersonNummer
+Kontakt "n" --> "0..1" Aktion : wgAktion_\nAktionNummer
+Kontakt "n" --> "0..1" EMail : eMail_\nEMailId
+Rechnung "n" --> "1" Organisation : Auftraggeber_\nOrganisationNummer
+Rechnung "n" --> "0..1" Projekt : ZuordnungProjekt_\nProjektNummer
+Projekt "n" --> "0..1" Organisation : auftraggeber_\nOrganisationNummer
+Projekt "n" --> "0..1" Person : VERANTWORTLICHER_\npersonNummer
+Todo "n" --> "0..1" Projekt : meinProjekt_\nProjektNummer
+
+LegacyNote .. Organisation
+@enduml

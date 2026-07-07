@@ -1,0 +1,161 @@
+@startuml
+title niceSmartCRM domain model (English, Python dataclasses, anti-corruption layer)
+
+' BITPlan Corporate identity skin params
+' Copyright (c) 2015-2026 BITPlan GmbH
+' see http://wiki.bitplan.com/PlantUmlSkinParams#BITPlanCI
+skinparam note {
+  BackGroundColor #FFFFFF
+  FontSize 12
+  ArrowColor #FF8000
+  BorderColor #FF8000
+  FontColor black
+  FontName Technical
+}
+skinparam class {
+  BackGroundColor #FFFFFF
+  FontSize 12
+  ArrowColor #FF8000
+  BorderColor #FF8000
+  FontColor black
+  FontName Technical
+}
+hide circle
+
+note as EnglishNote
+  English @dataclass domain model in crm/crm_core.py —
+  from_smartcrm() maps the German DB columns
+  (do NOT modify the DB schema until Java is decommissioned)
+end note
+
+class Organization {
+  organization_number: str <<PK>>
+  name: str
+  street: str
+  postal_code: str
+  city: str
+  country: str
+  industry: str
+  kind: str
+  phone: str
+  fax: str
+  website: str
+  revenue: int
+  employee_count: int
+  comment: str
+}
+
+class Person {
+  person_number: str <<PK>>
+  name: str
+  first_name: str
+  email: str
+  phone: str
+  mobile: str
+  salutation: str
+  title: str
+  kind: str
+  gender: str
+  personal: bool
+  language: str
+  comment: str
+}
+
+class Contact {
+  contact_number: str <<PK>>
+  topic: str
+  date: datetime
+  contact_type: str
+  contact_person: str
+  comment: str
+  followup: datetime
+  active: str
+  todo: str
+  responsible: str
+  completed: datetime
+}
+
+class Email {
+  email_id: str <<PK>>
+  to_address: str
+  cc: str
+  bcc: str
+  reply_to: str
+  subject: str
+  content: str
+  signature: str
+  attachment: str
+  sent: bool
+  send_date: datetime
+}
+
+class Project {
+  project_number: str <<PK>>
+  name: str
+  year: str
+  customer_order_number: str
+  status: str
+  goals: str
+  goal_achievement: str
+  planned_start: datetime
+  planned_end: datetime
+  planned_effort: int
+  planned_cost: int
+  actual_start: datetime
+  actual_end: datetime
+  actual_effort: int
+  actual_cost: int
+  documentation: str
+}
+
+class Invoice {
+  invoice_id: str <<PK>>
+  invoice_number: str
+  invoice_date: datetime
+  net_amount: float
+  gross_amount: float
+  paid_at: datetime
+  year_assignment: str
+  month_assignment: str
+  division: str
+  comment: str
+}
+
+class Action {
+  action_number: str <<PK>>
+  name: str
+  topic: str
+  date: datetime
+  contact_type: str
+  contact_person: str
+  comment: str
+  copy_contents: bool
+}
+
+class Todo {
+  todo_id: str <<PK>>
+  task: str
+  creator: str
+  created_on: datetime
+  responsible: str
+  accepted: bool
+  accepted_at: datetime
+  importance: str
+  urgency: str
+  planned_date: datetime
+  completed_at: datetime
+  status: str
+}
+
+Person "n" --> "1" Organization : organization_number
+Contact "n" --> "1" Person : person_number
+Contact "n" --> "0..1" Action : action_number
+Contact "n" --> "0..1" Email : email_id
+Invoice "n" --> "1" Organization : organization_number
+Invoice "n" --> "0..1" Project : project_number
+Project "n" --> "0..1" Organization : organization_number
+Project "n" --> "0..1" Person : responsible_person_number
+Todo "n" --> "0..1" Project : project_number
+
+EnglishNote .. Organization
+@enduml
