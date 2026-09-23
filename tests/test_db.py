@@ -50,6 +50,16 @@ class TestDB(Basetest):
             f"SELECT * FROM person WHERE personnummer='wf04002101'", expected=1
         )
 
+    def test_reconnect_after_server_gone_away(self):
+        """
+        test that a query survives a connection the server has closed
+        """
+        self.check_db_available()
+        # simulate wait_timeout: close the socket underneath the connection
+        self.db.connection._sock.close()
+        results = self.check_query("SELECT 1 AS alive", expected=1)
+        self.assertEqual(1, results[0]["alive"])
+
     def test_show_tables(self):
         """
         test showing all tables

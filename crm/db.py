@@ -75,6 +75,9 @@ class DB:
         Returns:
             List[Dict[str, Any]]: The result of the SQL query execution.
         """
+        # the server closes idle connections after wait_timeout;
+        # reconnect transparently instead of failing every later query
+        self.connection.ping(reconnect=True)
         with self.connection.cursor() as cursor:
             cursor.execute(query)
             return cursor.fetchall()
