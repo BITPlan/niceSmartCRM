@@ -4,24 +4,25 @@ Created on 2024-11-16
 @author: wf
 """
 
-import os
-
 import i18n
+
+from crm.fields import Fields
 
 
 class I18nConfig:
     """
-    Internationalization module configuration
+    Internationalization module configuration: the labels come from fields.yaml
     """
+
+    languages = ["en", "de"]
 
     @classmethod
     def config(cls, debug: bool = False):
-        module_path = os.path.dirname(os.path.abspath(__file__))
-        translations_path = os.path.join(module_path, "resources", "i18n")
-        if debug:
-            print(f"Loading translations from: {translations_path}")
-            print(f"Files in directory: {os.listdir(translations_path)}")
-        i18n.load_path.append(translations_path)
-        i18n.set("filename_format", "{locale}.{format}")
-        i18n.set("file_format", "yaml")
+        fields = Fields.get()
+        for lang in cls.languages:
+            labels = fields.labels(lang)
+            if debug:
+                print(f"{len(labels)} {lang} labels from {fields.yaml_path}")
+            for key, label in labels.items():
+                i18n.add_translation(key, label, locale=lang)
         i18n.set("fallback", "en")

@@ -12,10 +12,31 @@ nicegui based Customer Relation Management tool
 ## Migration 2026
 
 niceSmartCRM replaces the legacy Java/Jersey/JPA smartCRM system. Both systems share the same
-MariaDB `smartcrm` database during the transition; an anti-corruption layer
-(`from_smartcrm()` classmethods in [crm/crm_core.py](crm/crm_core.py)) translates the German
+MariaDB `smartcrm` database during the transition; an anti-corruption layer translates the German
 database schema to the English Python domain model. The database schema is only migrated
 to English naming once the Java system is decommissioned.
+
+### fields.yaml
+
+[crm/resources/fields.yaml](crm/resources/fields.yaml) is the single declarative source of that
+translation: one record per field, keyed by entity and English field name, carrying the legacy
+`column`, the `json` spelling of the JAXB export where it differs, the `type`, `pk`, `reference`
+and the `en`/`de` labels. [crm/fields.py](crm/fields.py) reads it and serves
+
+- the `from_smartcrm()` conversion of the dataclasses in [crm/crm_core.py](crm/crm_core.py)
+- the i18n labels of the UI (there is no separate translation file)
+- the DDL of English views over the untouched German tables: `smartcrm --views`
+
+```yaml
+  Person:
+    _: {en: Person, de: Person, plural: persons, table: person, icon: person}
+    person_number: {en: Person Number, de: Personennummer, column: PersonNummer, pk: true}
+    first_name: {en: First Name, de: Vorname, column: Vorname}
+    organization_number: {en: Organization Number, de: Organisation, column: meineOrganisation_OrganisationNummer, reference: Organization}
+```
+
+`de` is a label and `column` is the physical name; the two are distinct. See
+[issue #6](https://github.com/BITPlan/niceSmartCRM/issues/6).
 
 ### Legacy model (German — Java/JPA/MariaDB)
 

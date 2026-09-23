@@ -1,0 +1,183 @@
+# field descriptors of the niceSmartCRM entities: the English field name is the
+# key, column is the physical column of the legacy German table, json the
+# spelling of the JAXB export where it differs, en and de are the labels,
+# type the conversion (str where absent), pk the primary key, reference the
+# referenced entity; _ describes the entity itself. One file for the mapping
+# and the i18n labels, generating the English views, from_smartcrm and the
+# UI labels - niceSmartCRM #6
+# de labels of the first cut are the column names split into words, to be reviewed
+# WF 2026-09-23
+fields:
+  Organization:
+    _: {en: Organization, de: Organisation, plural: organizations, plural_en: Organizations, plural_de: Organisationen, table: organisation, icon: business}
+    name: {en: Name, de: Name, column: Name}
+    street: {en: Street, de: Strasse, column: Strasse}
+    fax: {en: Fax, de: Telefax, column: Telefax}
+    comment: {en: Comment, de: Kommentar, column: Kommentar}
+    kind: {en: Kind, de: Art, column: art}
+    industry: {en: Industry, de: Branche, column: Branche}
+    created_at: {en: Created At, de: Created At, column: createdAt, type: datetime}
+    data_origin: {en: Data Origin, de: Daten Herkunft, column: DatenHerkunft}
+    created_by: {en: Created By, de: Erstellt Von, column: ErstelltVon}
+    country: {en: Country, de: Land, column: Land}
+    last_modified: {en: Last Modified, de: Last Modified, column: lastmodified, json: lastModified, type: datetime}
+    logo: {en: Logo, de: Logo, column: logo, default: ""}
+    employee_count: {en: Employee Count, de: Mitarbeiterzahl, column: Mitarbeiterzahl, type: int}
+    organization_number: {en: Organization Number, de: Organisation Nummer, column: OrganisationNummer, pk: true}
+    city: {en: City, de: Ort, column: Ort}
+    postal_code: {en: Postal Code, de: PLZ, column: PLZ}
+    po_box: {en: PO Box, de: Postfach, column: Postfach}
+    sales_estimate: {en: Sales Estimate, de: Sales Estimate, column: salesEstimate, type: int}
+    sales_rank: {en: Sales Rank, de: Sales Rank, column: salesRank, type: int}
+    location_name: {en: Location Name, de: Standort, column: Standort}
+    phone: {en: Phone, de: Telefon, column: Telefon}
+    revenue: {en: Revenue, de: Umsatz, column: Umsatz, type: int}
+    revenue_probability: {en: Revenue Probability, de: Umsatz Wahrscheinlichkeit, column: UmsatzWahrscheinlichkeit, type: int}
+    revenue_potential: {en: Revenue Potential, de: Umsatzpotential, column: Umsatzpotential, type: int}
+    country_dialing_code: {en: Country Dialing Code, de: Vorwahl Land, column: VorwahlLand}
+    city_dialing_code: {en: City Dialing Code, de: Vorwahl Ort, column: VorwahlOrt}
+    website: {en: Website, de: Web, column: Web}
+    importance: {en: Importance, de: Wichtigkeit, column: Wichtigkeit}
+  Person:
+    _: {en: Person, de: Person, plural: persons, plural_en: Persons, plural_de: Personen, table: person, icon: person}
+    kind: {en: Kind, de: Art, column: Art}
+    created_at: {en: Created At, de: Created At, column: createdAt, type: datetime}
+    data_origin: {en: Data Origin, de: Daten Herkunft, column: DatenHerkunft}
+    email: {en: Email, de: Email, column: email}
+    created_by: {en: Created By, de: Erstellt Von, column: ErstelltVon}
+    comment: {en: Comment, de: Kommentar, column: Kommentar}
+    last_modified: {en: Last Modified, de: Last Modified, column: lastmodified, json: lastModified, type: datetime}
+    name: {en: Name, de: Name, column: Name}
+    first_name: {en: First Name, de: Vorname, column: Vorname}
+    personal: {en: Personal, de: Per Du, column: perDu, type: bool}
+    person_number: {en: Person Number, de: Person Nummer, column: PersonNummer, pk: true}
+    sales_estimate: {en: Sales Estimate, de: Sales Estimate, column: salesEstimate, type: int}
+    sales_rank: {en: Sales Rank, de: Sales Rank, column: salesrank, json: salesRank, type: int}
+    gender: {en: Gender, de: Sex, column: sex}
+    language: {en: Language, de: Sprache, column: Sprache}
+    subid: {en: Subid, de: Subid, column: subid, type: int}
+    other_email: {en: Other Email, de: Otheremail, column: otheremail}
+    phone: {en: Phone, de: Telefon, column: Telefon}
+    fax: {en: Fax, de: Telefax, column: Telefax}
+    mobile: {en: Mobile, de: Mobiltelefon, column: Mobiltelefon}
+    social_links: {en: Social Links, de: Social Links, column: socialLinks}
+    photo: {en: Photo, de: Photo, column: photo}
+    salutation: {en: Salutation, de: Anrede, column: Anrede}
+    title: {en: Title, de: Titel, column: Titel}
+    academic_title: {en: Academic Title, de: Akademischer Titel, column: akademischerTitel}
+    private_street: {en: Private Street, de: Strasse Privat, column: StrassePrivat}
+    private_postal_code: {en: Private Postal Code, de: PLZPrivat, column: PLZPrivat}
+    private_city: {en: Private City, de: Ort Privat, column: OrtPrivat}
+    responsible: {en: Responsible, de: Sachbearbeiter, column: Sachbearbeiter}
+    organization_number: {en: Organization Number, de: Meine Organisation, column: meineOrganisation_OrganisationNummer, reference: Organization}
+  Contact:
+    _: {en: Contact, de: Kontakt, plural: contacts, plural_en: Contacts, plural_de: Kontakte, table: kontakt, icon: contact_page}
+    contact_number: {en: Contact Number, de: Kontakt Nummer, column: KontaktNummer, pk: true}
+    email_id: {en: Email ID, de: E Mail, column: eMail_EMailId, reference: Email}
+    active: {en: Active, de: Aktiv, column: aktiv}
+    contact_person: {en: Contact Person, de: Ansprechpartner, column: Ansprechpartner}
+    attachment: {en: Attachment, de: Attachment, column: attachment}
+    date: {en: Date, de: Datum, column: Datum}
+    deleted_at: {en: Deleted At, de: Deleted At, column: deletedAt}
+    completed: {en: Completed, de: Erledigt, column: erledigt}
+    comment: {en: Comment, de: Kommentar, column: Kommentar}
+    contact_type: {en: Contact Type, de: Kontaktart, column: Kontaktart}
+    last_modified: {en: Last Modified, de: Lastmodified, column: lastmodified}
+    person_number: {en: Person Number, de: Meine Person, column: meinePerson_PersonNummer, reference: Person}
+    topic: {en: Topic, de: Thema, column: Thema}
+    todo: {en: Todo, de: Todo, column: todo}
+    uid: {en: Uid, de: Uid, column: uid}
+    responsible: {en: Responsible, de: Verantwortlicher, column: Verantwortlicher}
+    action_number: {en: Action Number, de: Wg Aktion, column: wgAktion_AktionNummer, reference: Action}
+    followup: {en: Followup, de: Wiedervorlage, column: Wiedervorlage}
+    created_at: {en: Created At, de: Created At, column: createdAt}
+  Invoice:
+    _: {en: Invoice, de: Rechnung, plural: invoices, plural_en: Invoices, plural_de: Rechnungen, table: rechnung, icon: receipt}
+    invoice_id: {en: Invoice ID, de: Rechnungs ID, column: rechnungsID, pk: true}
+    organization_number: {en: Organization Number, de: Auftraggeber, column: Auftraggeber_OrganisationNummer, reference: Organization}
+    comment: {en: Comment, de: Bemerkung, column: bemerkung}
+    paid_at: {en: Paid At, de: Bezahlt Am, column: bezahltAm, type: datetime}
+    gross_amount: {en: Gross Amount, de: Brutto, column: brutto}
+    deleted_at: {en: Deleted At, de: Deleted At, column: deletedAt, type: datetime}
+    created_by: {en: Created By, de: Erstellt Von, column: erstelltVon}
+    last_modified: {en: Last Modified, de: Lastmodified, column: lastmodified, type: datetime}
+    net_amount: {en: Net Amount, de: Netto, column: netto}
+    invoice_date: {en: Invoice Date, de: Rechnungsdatum, column: rechnungsdatum, type: datetime}
+    invoice_number: {en: Invoice Number, de: Rechnungsnummer, column: rechnungsnummer}
+    year_assignment: {en: Year Assignment, de: Zuordnung Jahr, column: zuordnungJahr}
+    month_assignment: {en: Month Assignment, de: Zuordnung Monat, column: zuordnungMonat}
+    project_number: {en: Project Number, de: Zuordnung Projekt, column: ZuordnungProjekt_ProjektNummer, reference: Project}
+    division: {en: Division, de: Zuordnung Sparte, column: zuordnungSparte}
+    payment_statement: {en: Payment Statement, de: Bezahlt Auszug, column: bezahltAuszug}
+    document: {en: Document, de: Document, column: document}
+  Email:
+    _: {en: Email, de: E-Mail, plural: emails, plural_en: Emails, plural_de: E-Mails, table: email, icon: email}
+    email_id: {en: Email ID, de: EMail Id, column: EMailId, pk: true}
+    to_address: {en: To Address, de: To Adr, column: ToAdr}
+    cc: {en: CC, de: CC, column: CC}
+    bcc: {en: BCC, de: BCC, column: BCC}
+    reply_to: {en: Reply To, de: Reply To, column: ReplyTo}
+    subject: {en: Subject, de: Subject, column: Subject}
+    content: {en: Content, de: Content, column: Content}
+    signature: {en: Signature, de: Signature, column: signature}
+    attachment: {en: Attachment, de: Attachment, column: Attachment}
+    pegasus_id: {en: Pegasus ID, de: Pegasus Id, column: PegasusId}
+    sent: {en: Sent, de: Sent, column: sent, type: bool}
+    send_date: {en: Send Date, de: Send Date, column: sendDate, type: datetime}
+    uid: {en: Uid, de: Uid, column: uid}
+    deleted_at: {en: Deleted At, de: Deleted At, column: deletedAt, type: datetime}
+    last_modified: {en: Last Modified, de: Last Modified, column: lastmodified, json: lastModified, type: datetime}
+  Project:
+    _: {en: Project, de: Projekt, plural: projects, plural_en: Projects, plural_de: Projekte, table: projekt, icon: folder}
+    project_number: {en: Project Number, de: Projekt Nummer, column: ProjektNummer, pk: true}
+    name: {en: Name, de: Name, column: name}
+    year: {en: Year, de: Jahr, column: jahr}
+    customer_order_number: {en: Customer Order Number, de: Auftragsnrkunde, column: auftragsnrkunde}
+    status: {en: Status, de: Status, column: status}
+    goals: {en: Goals, de: Ziele, column: ziele}
+    goal_achievement: {en: Goal Achievement, de: Zielerrreichungsgrad, column: zielerrreichungsgrad}
+    documentation: {en: Documentation, de: Dokumentation, column: dokumentation}
+    planned_start: {en: Planned Start, de: Plananfang, column: plananfang, type: datetime}
+    planned_end: {en: Planned End, de: Planende, column: planende, type: datetime}
+    planned_effort: {en: Planned Effort, de: Planaufwand, column: planaufwand, type: int}
+    planned_cost: {en: Planned Cost, de: Plankosten, column: plankosten, type: int}
+    actual_start: {en: Actual Start, de: Istanfang, column: istanfang, type: datetime}
+    actual_end: {en: Actual End, de: Istende, column: istende, type: datetime}
+    actual_effort: {en: Actual Effort, de: Istaufwand, column: istaufwand, type: int}
+    actual_cost: {en: Actual Cost, de: Istkosten, column: istkosten, type: int}
+    last_modified: {en: Last Modified, de: Last Modified, column: lastmodified, json: lastModified, type: datetime}
+    organization_number: {en: Organization Number, de: Auftraggeber, column: auftraggeber_OrganisationNummer, reference: Organization}
+    responsible_person_number: {en: Responsible Person Number, de: VERANTWORTLICHER, column: VERANTWORTLICHER_personNummer, reference: Person}
+  Action:
+    _: {en: Action, de: Aktion, plural: actions, plural_en: Actions, plural_de: Aktionen, table: aktion, icon: campaign}
+    action_number: {en: Action Number, de: Aktion Nummer, column: AktionNummer, pk: true}
+    name: {en: Name, de: Name, column: name}
+    topic: {en: Topic, de: Thema, column: Thema}
+    date: {en: Date, de: Datum, column: Datum, type: datetime}
+    contact_type: {en: Contact Type, de: Kontaktart, column: Kontaktart}
+    contact_person: {en: Contact Person, de: Ansprechpartner, column: Ansprechpartner}
+    comment: {en: Comment, de: Kommentar, column: kommentar}
+    copy_contents: {en: Copy Contents, de: Inhalte Kopieren, column: inhalteKopieren, type: bool}
+    deleted_at: {en: Deleted At, de: Deleted At, column: deletedAt, type: datetime}
+    last_modified: {en: Last Modified, de: Last Modified, column: lastmodified, json: lastModified, type: datetime}
+  Todo:
+    _: {en: Todo, de: Aufgabe, plural: todos, plural_en: Todos, plural_de: Aufgaben, table: todo, icon: task_alt}
+    todo_id: {en: Todo ID, de: Id, column: id, pk: true}
+    task: {en: Task, de: Aufgabe, column: aufgabe}
+    creator: {en: Creator, de: Ersteller, column: ersteller}
+    created_on: {en: Created On, de: Erstellungsdatum, column: erstellungsdatum, type: datetime}
+    responsible: {en: Responsible, de: Verantwortlicher, column: verantwortlicher}
+    accepted: {en: Accepted, de: Akzeptiert, column: akzeptiert, type: bool}
+    accepted_at: {en: Accepted At, de: Akzeptiert Am, column: akzeptiertAm, type: datetime}
+    importance: {en: Importance, de: Wichtigkeit, column: wichtigkeit}
+    urgency: {en: Urgency, de: Dringlichkeit, column: dringlichkeit}
+    planned_date: {en: Planned Date, de: Plantermin, column: plantermin, type: datetime}
+    completed_at: {en: Completed At, de: Erledigt Am, column: erledigtAm, type: datetime}
+    status: {en: Status, de: Status, column: status}
+    deleted_at: {en: Deleted At, de: Deleted At, column: deletedAt, type: datetime}
+    last_modified: {en: Last Modified, de: Last Modified, column: lastmodified, json: lastModified, type: datetime}
+    project_number: {en: Project Number, de: Mein Projekt, column: meinProjekt_ProjektNummer, reference: Project}
+  UI:
+    _: {en: niceSmartCRM, de: niceSmartCRM}
+    nodetypeconfig_list: {en: Nodes, de: Knoten}
+    invalid_node_type: {en: invalid node type, de: ungültiger Knotentyp}

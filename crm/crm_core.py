@@ -8,6 +8,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, Optional, TypeVar
 
+from crm.fields import Fields
+
 T = TypeVar("T")
 
 
@@ -96,38 +98,7 @@ class Organization:
     @classmethod
     def from_smartcrm(cls, data: Dict) -> "Organization":
         """Convert SmartCRM data dictionary to Organization instance."""
-        return cls(
-            name=data.get("Name"),
-            street=data.get("Strasse"),
-            fax=data.get("Telefax"),
-            comment=data.get("Kommentar"),
-            kind=data.get("art"),
-            industry=data.get("Branche"),
-            created_at=TypeConverter.to_datetime(data.get("createdAt")),
-            data_origin=data.get("DatenHerkunft"),
-            created_by=data.get("ErstelltVon"),
-            country=data.get("Land"),
-            last_modified=TypeConverter.to_datetime(data.get("lastModified")),
-            logo=data.get("logo", ""),
-            employee_count=TypeConverter.to_int(data.get("Mitarbeiterzahl")),
-            organization_number=data.get("OrganisationNummer"),
-            city=data.get("Ort"),
-            postal_code=data.get("PLZ"),
-            po_box=data.get("Postfach"),
-            sales_estimate=TypeConverter.to_int(data.get("salesEstimate")),
-            sales_rank=TypeConverter.to_int(data.get("salesRank")),
-            location_name=data.get("Standort"),
-            phone=data.get("Telefon"),
-            revenue=TypeConverter.to_int(data.get("Umsatz")),
-            revenue_probability=TypeConverter.to_int(
-                data.get("UmsatzWahrscheinlichkeit")
-            ),
-            revenue_potential=TypeConverter.to_int(data.get("Umsatzpotential")),
-            country_dialing_code=data.get("VorwahlLand"),
-            city_dialing_code=data.get("VorwahlOrt"),
-            website=data.get("Web"),
-            importance=data.get("Wichtigkeit"),
-        )
+        return Fields.get().to_dataclass(cls, data)
 
 
 @dataclass
@@ -166,38 +137,7 @@ class Person:
     @classmethod
     def from_smartcrm(cls, data: Dict) -> "Person":
         """Convert SmartCRM data dictionary to Person instance."""
-        return cls(
-            kind=data.get("Art"),
-            created_at=TypeConverter.to_datetime(data.get("createdAt")),
-            data_origin=data.get("DatenHerkunft"),
-            email=data.get("email"),
-            created_by=data.get("ErstelltVon"),
-            comment=data.get("Kommentar"),
-            last_modified=TypeConverter.to_datetime(data.get("lastModified")),
-            name=data.get("Name"),
-            first_name=data.get("Vorname"),
-            personal=TypeConverter.to_bool(data.get("perDu")),
-            person_number=data.get("PersonNummer"),
-            sales_estimate=TypeConverter.to_int(data.get("salesEstimate")),
-            sales_rank=TypeConverter.to_int(data.get("salesRank")),
-            gender=data.get("sex"),
-            language=data.get("Sprache"),
-            subid=TypeConverter.to_int(data.get("subid")),
-            other_email=data.get("otheremail"),
-            phone=data.get("Telefon"),
-            fax=data.get("Telefax"),
-            mobile=data.get("Mobiltelefon"),
-            social_links=data.get("socialLinks"),
-            photo=data.get("photo"),
-            salutation=data.get("Anrede"),
-            title=data.get("Titel"),
-            academic_title=data.get("akademischerTitel"),
-            private_street=data.get("StrassePrivat"),
-            private_postal_code=data.get("PLZPrivat"),
-            private_city=data.get("OrtPrivat"),
-            responsible=data.get("Sachbearbeiter"),
-            organization_number=data.get("meineOrganisation_OrganisationNummer"),
-        )
+        return Fields.get().to_dataclass(cls, data)
 
 
 @dataclass
@@ -227,27 +167,7 @@ class Contact:
     @classmethod
     def from_smartcrm(cls, data: Dict) -> "Contact":
         """Convert SmartCRM data to Contact instance"""
-        return cls(
-            contact_number=data.get("KontaktNummer"),
-            email_id=data.get("eMail_EMailId"),
-            active=data.get("aktiv"),
-            contact_person=data.get("Ansprechpartner"),
-            attachment=data.get("attachment"),
-            date=data.get("Datum"),
-            deleted_at=data.get("deletedAt"),
-            completed=data.get("erledigt"),
-            comment=data.get("Kommentar"),
-            contact_type=data.get("Kontaktart"),
-            last_modified=data.get("lastmodified"),
-            person_number=data.get("meinePerson_PersonNummer"),
-            topic=data.get("Thema"),
-            todo=data.get("todo"),
-            uid=data.get("uid"),
-            responsible=data.get("Verantwortlicher"),
-            action_number=data.get("wgAktion_AktionNummer"),
-            followup=data.get("Wiedervorlage"),
-            created_at=data.get("createdAt"),
-        )
+        return Fields.get().to_dataclass(cls, data)
 
 
 @dataclass
@@ -273,25 +193,7 @@ class Invoice:
     @classmethod
     def from_smartcrm(cls, data: Dict) -> "Invoice":
         """Convert SmartCRM data dictionary to Invoice instance."""
-        return cls(
-            invoice_id=data.get("rechnungsID"),
-            organization_number=data.get("Auftraggeber_OrganisationNummer"),
-            comment=data.get("bemerkung"),
-            paid_at=TypeConverter.to_datetime(data.get("bezahltAm")),
-            gross_amount=data.get("brutto"),
-            deleted_at=TypeConverter.to_datetime(data.get("deletedAt")),
-            created_by=data.get("erstelltVon"),
-            last_modified=TypeConverter.to_datetime(data.get("lastmodified")),
-            net_amount=data.get("netto"),
-            invoice_date=TypeConverter.to_datetime(data.get("rechnungsdatum")),
-            invoice_number=data.get("rechnungsnummer"),
-            year_assignment=data.get("zuordnungJahr"),
-            month_assignment=data.get("zuordnungMonat"),
-            project_number=data.get("ZuordnungProjekt_ProjektNummer"),
-            division=data.get("zuordnungSparte"),
-            payment_statement=data.get("bezahltAuszug"),
-            document=data.get("document"),
-        )
+        return Fields.get().to_dataclass(cls, data)
 
 
 @dataclass
@@ -317,23 +219,7 @@ class Email:
     @classmethod
     def from_smartcrm(cls, data: Dict) -> "Email":
         """Convert SmartCRM data dictionary to Email instance."""
-        return cls(
-            email_id=data.get("EMailId"),
-            to_address=data.get("ToAdr"),
-            cc=data.get("CC"),
-            bcc=data.get("BCC"),
-            reply_to=data.get("ReplyTo"),
-            subject=data.get("Subject"),
-            content=data.get("Content"),
-            signature=data.get("signature"),
-            attachment=data.get("Attachment"),
-            pegasus_id=data.get("PegasusId"),
-            sent=TypeConverter.to_bool(data.get("sent")),
-            send_date=TypeConverter.to_datetime(data.get("sendDate")),
-            uid=data.get("uid"),
-            deleted_at=TypeConverter.to_datetime(data.get("deletedAt")),
-            last_modified=TypeConverter.to_datetime(data.get("lastModified")),
-        )
+        return Fields.get().to_dataclass(cls, data)
 
 
 @dataclass
@@ -363,27 +249,7 @@ class Project:
     @classmethod
     def from_smartcrm(cls, data: Dict) -> "Project":
         """Convert SmartCRM data dictionary to Project instance."""
-        return cls(
-            project_number=data.get("ProjektNummer"),
-            name=data.get("name"),
-            year=data.get("jahr"),
-            customer_order_number=data.get("auftragsnrkunde"),
-            status=data.get("status"),
-            goals=data.get("ziele"),
-            goal_achievement=data.get("zielerrreichungsgrad"),
-            documentation=data.get("dokumentation"),
-            planned_start=TypeConverter.to_datetime(data.get("plananfang")),
-            planned_end=TypeConverter.to_datetime(data.get("planende")),
-            planned_effort=TypeConverter.to_int(data.get("planaufwand")),
-            planned_cost=TypeConverter.to_int(data.get("plankosten")),
-            actual_start=TypeConverter.to_datetime(data.get("istanfang")),
-            actual_end=TypeConverter.to_datetime(data.get("istende")),
-            actual_effort=TypeConverter.to_int(data.get("istaufwand")),
-            actual_cost=TypeConverter.to_int(data.get("istkosten")),
-            last_modified=TypeConverter.to_datetime(data.get("lastModified")),
-            organization_number=data.get("auftraggeber_OrganisationNummer"),
-            responsible_person_number=data.get("VERANTWORTLICHER_personNummer"),
-        )
+        return Fields.get().to_dataclass(cls, data)
 
 
 @dataclass
@@ -404,18 +270,7 @@ class Action:
     @classmethod
     def from_smartcrm(cls, data: Dict) -> "Action":
         """Convert SmartCRM data dictionary to Action instance."""
-        return cls(
-            action_number=data.get("AktionNummer"),
-            name=data.get("name"),
-            topic=data.get("Thema"),
-            date=TypeConverter.to_datetime(data.get("Datum")),
-            contact_type=data.get("Kontaktart"),
-            contact_person=data.get("Ansprechpartner"),
-            comment=data.get("kommentar"),
-            copy_contents=TypeConverter.to_bool(data.get("inhalteKopieren")),
-            deleted_at=TypeConverter.to_datetime(data.get("deletedAt")),
-            last_modified=TypeConverter.to_datetime(data.get("lastModified")),
-        )
+        return Fields.get().to_dataclass(cls, data)
 
 
 @dataclass
@@ -441,20 +296,4 @@ class Todo:
     @classmethod
     def from_smartcrm(cls, data: Dict) -> "Todo":
         """Convert SmartCRM data dictionary to Todo instance."""
-        return cls(
-            todo_id=data.get("id"),
-            task=data.get("aufgabe"),
-            creator=data.get("ersteller"),
-            created_on=TypeConverter.to_datetime(data.get("erstellungsdatum")),
-            responsible=data.get("verantwortlicher"),
-            accepted=TypeConverter.to_bool(data.get("akzeptiert")),
-            accepted_at=TypeConverter.to_datetime(data.get("akzeptiertAm")),
-            importance=data.get("wichtigkeit"),
-            urgency=data.get("dringlichkeit"),
-            planned_date=TypeConverter.to_datetime(data.get("plantermin")),
-            completed_at=TypeConverter.to_datetime(data.get("erledigtAm")),
-            status=data.get("status"),
-            deleted_at=TypeConverter.to_datetime(data.get("deletedAt")),
-            last_modified=TypeConverter.to_datetime(data.get("lastModified")),
-            project_number=data.get("meinProjekt_ProjektNummer"),
-        )
+        return Fields.get().to_dataclass(cls, data)
