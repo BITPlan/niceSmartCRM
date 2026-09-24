@@ -9,7 +9,6 @@ import os
 import i18n
 from basemkit.persistent_log import Log
 from mogwai.core.mogwaigraph import MogwaiGraph, MogwaiGraphConfig
-from mogwai.schema.graph_schema import GraphSchema
 from mogwai.web.node_view import NodeTableView, NodeView, NodeViewConfig
 from ngwidgets.input_webserver import InputWebserver, InputWebSolution
 from ngwidgets.webserver import WebserverConfig
@@ -17,6 +16,7 @@ from nicegui import Client, app, ui
 
 from crm.crm_rest import CrmRestApi
 from crm.db import DB
+from crm.fields import Fields
 from crm.i18n_config import I18nConfig
 from crm.smartcrm_adapter import SmartCRMAdapter
 from crm.version import Version
@@ -148,10 +148,8 @@ class CrmWebServer(InputWebserver):
         I18nConfig.config()
 
         InputWebserver.configure_run(self)
-        module_path = os.path.dirname(os.path.abspath(__file__))
-        yaml_path = os.path.join(module_path, "resources", "crm-schema.yaml")
-
-        self.schema = GraphSchema.load(yaml_path=yaml_path)
+        # the graph schema comes from fields.yaml like the field mapping and the labels
+        self.schema = Fields.get().graph_schema()
         self.schema.add_to_graph(self.graph)
         try:
             self.db = DB()

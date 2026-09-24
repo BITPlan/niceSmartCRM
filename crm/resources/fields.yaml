@@ -2,14 +2,15 @@
 # key, column is the physical column of the legacy German table, json the
 # spelling of the JAXB export where it differs, en and de are the labels,
 # type the conversion (str where absent), pk the primary key, reference the
-# referenced entity; _ describes the entity itself. One file for the mapping
+# referenced entity; _ describes the entity itself with its table, icon, key_field,
+# display_order and description for the graph schema. One file for the mapping
 # and the i18n labels, generating the English views, from_smartcrm and the
 # UI labels - niceSmartCRM #6
 # de labels of the first cut are the column names split into words, to be reviewed
 # WF 2026-09-23
 fields:
   Organization:
-    _: {en: Organization, de: Organisation, plural: organizations, plural_en: Organizations, plural_de: Organisationen, table: organisation, icon: business}
+    _: {en: Organization, de: Organisation, plural: organizations, plural_en: Organizations, plural_de: Organisationen, table: organisation, icon: business, key_field: name, display_order: 10, description: an Organization}
     name: {en: Name, de: Name, column: Name}
     street: {en: Street, de: Strasse, column: Strasse}
     fax: {en: Fax, de: Telefax, column: Telefax}
@@ -39,7 +40,7 @@ fields:
     website: {en: Website, de: Web, column: Web}
     importance: {en: Importance, de: Wichtigkeit, column: Wichtigkeit}
   Person:
-    _: {en: Person, de: Person, plural: persons, plural_en: Persons, plural_de: Personen, table: person, icon: person}
+    _: {en: Person, de: Person, plural: persons, plural_en: Persons, plural_de: Personen, table: person, icon: person, key_field: name, display_order: 20, description: a person}
     kind: {en: Kind, de: Art, column: Art}
     created_at: {en: Created At, de: Created At, column: createdAt, type: datetime}
     data_origin: {en: Data Origin, de: Daten Herkunft, column: DatenHerkunft}
@@ -71,7 +72,7 @@ fields:
     responsible: {en: Responsible, de: Sachbearbeiter, column: Sachbearbeiter}
     organization_number: {en: Organization Number, de: Meine Organisation, column: meineOrganisation_OrganisationNummer, reference: Organization}
   Contact:
-    _: {en: Contact, de: Kontakt, plural: contacts, plural_en: Contacts, plural_de: Kontakte, table: kontakt, icon: contact_page}
+    _: {en: Contact, de: Kontakt, plural: contacts, plural_en: Contacts, plural_de: Kontakte, table: kontakt, icon: contact_page, key_field: contact_number, display_order: 30, description: a Contact}
     contact_number: {en: Contact Number, de: Kontakt Nummer, column: KontaktNummer, pk: true}
     email_id: {en: Email ID, de: E Mail, column: eMail_EMailId, reference: Email}
     active: {en: Active, de: Aktiv, column: aktiv}
@@ -92,7 +93,7 @@ fields:
     followup: {en: Followup, de: Wiedervorlage, column: Wiedervorlage}
     created_at: {en: Created At, de: Created At, column: createdAt}
   Invoice:
-    _: {en: Invoice, de: Rechnung, plural: invoices, plural_en: Invoices, plural_de: Rechnungen, table: rechnung, icon: receipt}
+    _: {en: Invoice, de: Rechnung, plural: invoices, plural_en: Invoices, plural_de: Rechnungen, table: rechnung, icon: receipt, key_field: invoice_id, display_order: 40, description: an Invoice}
     invoice_id: {en: Invoice ID, de: Rechnungs ID, column: rechnungsID, pk: true}
     organization_number: {en: Organization Number, de: Auftraggeber, column: Auftraggeber_OrganisationNummer, reference: Organization}
     comment: {en: Comment, de: Bemerkung, column: bemerkung}
@@ -111,7 +112,7 @@ fields:
     payment_statement: {en: Payment Statement, de: Bezahlt Auszug, column: bezahltAuszug}
     document: {en: Document, de: Document, column: document}
   Email:
-    _: {en: Email, de: E-Mail, plural: emails, plural_en: Emails, plural_de: E-Mails, table: email, icon: email}
+    _: {en: Email, de: E-Mail, plural: emails, plural_en: Emails, plural_de: E-Mails, table: email, icon: email, key_field: email_id, display_order: 50, description: an Email record}
     email_id: {en: Email ID, de: EMail Id, column: EMailId, pk: true}
     to_address: {en: To Address, de: To Adr, column: ToAdr}
     cc: {en: CC, de: CC, column: CC}
@@ -128,7 +129,7 @@ fields:
     deleted_at: {en: Deleted At, de: Deleted At, column: deletedAt, type: datetime}
     last_modified: {en: Last Modified, de: Last Modified, column: lastmodified, json: lastModified, type: datetime}
   Project:
-    _: {en: Project, de: Projekt, plural: projects, plural_en: Projects, plural_de: Projekte, table: projekt, icon: folder}
+    _: {en: Project, de: Projekt, plural: projects, plural_en: Projects, plural_de: Projekte, table: projekt, icon: folder, key_field: project_number, display_order: 60, description: a Project}
     project_number: {en: Project Number, de: Projekt Nummer, column: ProjektNummer, pk: true}
     name: {en: Name, de: Name, column: name}
     year: {en: Year, de: Jahr, column: jahr}
@@ -149,7 +150,7 @@ fields:
     organization_number: {en: Organization Number, de: Auftraggeber, column: auftraggeber_OrganisationNummer, reference: Organization}
     responsible_person_number: {en: Responsible Person Number, de: VERANTWORTLICHER, column: VERANTWORTLICHER_personNummer, reference: Person}
   Action:
-    _: {en: Action, de: Aktion, plural: actions, plural_en: Actions, plural_de: Aktionen, table: aktion, icon: campaign}
+    _: {en: Action, de: Aktion, plural: actions, plural_en: Actions, plural_de: Aktionen, table: aktion, icon: campaign, key_field: action_number, display_order: 70, description: an Action/Campaign}
     action_number: {en: Action Number, de: Aktion Nummer, column: AktionNummer, pk: true}
     name: {en: Name, de: Name, column: name}
     topic: {en: Topic, de: Thema, column: Thema}
@@ -161,7 +162,7 @@ fields:
     deleted_at: {en: Deleted At, de: Deleted At, column: deletedAt, type: datetime}
     last_modified: {en: Last Modified, de: Last Modified, column: lastmodified, json: lastModified, type: datetime}
   Todo:
-    _: {en: Todo, de: Aufgabe, plural: todos, plural_en: Todos, plural_de: Aufgaben, table: todo, icon: task_alt}
+    _: {en: Todo, de: Aufgabe, plural: todos, plural_en: Todos, plural_de: Aufgaben, table: todo, icon: task_alt, key_field: todo_id, display_order: 80, description: a Todo item}
     todo_id: {en: Todo ID, de: Id, column: id, pk: true}
     task: {en: Task, de: Aufgabe, column: aufgabe}
     creator: {en: Creator, de: Ersteller, column: ersteller}
@@ -177,7 +178,8 @@ fields:
     deleted_at: {en: Deleted At, de: Deleted At, column: deletedAt, type: datetime}
     last_modified: {en: Last Modified, de: Last Modified, column: lastmodified, json: lastModified, type: datetime}
     project_number: {en: Project Number, de: Mein Projekt, column: meinProjekt_ProjektNummer, reference: Project}
+  NodeTypeConfig:
+    _: {en: Node Type, de: Knotentyp, plural_en: Nodes, plural_de: Knoten, icon: schema, key_field: label, display_order: 90, description: Configuration for a graph node type, dataclass: mogwai.schema.graph_schema.NodeTypeConfig}
   UI:
     _: {en: niceSmartCRM, de: niceSmartCRM}
-    nodetypeconfig_list: {en: Nodes, de: Knoten}
     invalid_node_type: {en: invalid node type, de: ungültiger Knotentyp}

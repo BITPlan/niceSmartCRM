@@ -25,6 +25,7 @@ and the `en`/`de` labels. [crm/fields.py](crm/fields.py) reads it and serves
 
 - the `from_smartcrm()` conversion of the dataclasses in [crm/crm_core.py](crm/crm_core.py)
 - the i18n labels of the UI (there is no separate translation file)
+- the graph schema of the UI: icon, key field and display order of every node type (there is no separate schema file)
 - the DDL of English views over the untouched German tables: `smartcrm --views`
 
 ```yaml

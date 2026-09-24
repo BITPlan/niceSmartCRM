@@ -5,7 +5,8 @@ Created on 2026-09-23
 
 field descriptors of the niceSmartCRM entities read from fields.yaml:
 the single source for the German column to English field mapping,
-the en/de labels, the English SQL views and the dataclass conversion
+the en/de labels, the English SQL views, the dataclass conversion
+and the graph schema
 see https://github.com/BITPlan/niceSmartCRM/issues/6
 """
 
@@ -14,6 +15,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 import yaml
+from mogwai.schema.graph_schema import GraphSchema, NodeTypeConfig
 
 
 @dataclass
@@ -90,7 +92,7 @@ class FieldSpec:
 @dataclass
 class EntitySpec:
     """
-    one entity: its table, labels and fields
+    one entity: its table, labels, graph node type and fields
     """
 
     name: str
@@ -101,6 +103,10 @@ class EntitySpec:
     plural_en: Optional[str] = None
     plural_de: Optional[str] = None
     icon: Optional[str] = None
+    key_field: Optional[str] = None  # set for the node types of the graph
+    display_order: int = 1000
+    description: Optional[str] = None
+    dataclass: Optional[str] = None  # crm.crm_core.<name> by default
     fields: Dict[str, FieldSpec] = field(default_factory=dict)
 
     @property
@@ -114,6 +120,21 @@ class EntitySpec:
                 pk = field_spec
                 break
         return pk
+
+    @property
+    def dataclass_name(self) -> str:
+        """
+        the fully qualified name of the dataclass
+        """
+        dataclass_name = self.dataclass or f"crm.crm_core.{self.name}"
+        return dataclass_name
+
+    def label(self, lang: str = "en") -> str:
+        """
+        get the label in the given language
+        """
+        label = self.de if lang == "de" else self.en
+        return label
 
     def plural_label(self, lang: str = "en") -> str:
         """
@@ -166,6 +187,24 @@ class EntitySpec:
             f"FROM `{source_db}`.`{self.table}`;"
         )
         return ddl
+
+    def node_type_config(self) -> NodeTypeConfig:
+        """
+        the graph node type configuration of this entity
+
+        Returns:
+            NodeTypeConfig: the mogwai node type configuration
+        """
+        config = NodeTypeConfig(
+            label=self.name,
+            icon=self.icon,
+            key_field=self.key_field,
+            dataclass_name=self.dataclass_name,
+            display_name=self.en,
+            display_order=self.display_order,
+            description=self.description,
+        )
+        return config
 
 
 class Fields:
@@ -235,6 +274,13 @@ class Fields:
         tables = [entity for entity in self.entities.values() if entity.table]
         return tables
 
+    def node_types(self) -> List[EntitySpec]:
+        """
+        the entities that are node types of the graph
+        """
+        node_types = [entity for entity in self.entities.values() if entity.key_field]
+        return node_types
+
     def to_dataclass(self, dataclass_type: type, record: Dict) -> Any:
         """
         convert a legacy record to an instance of the given dataclass
@@ -267,6 +313,21 @@ class Fields:
         ddl = "\n\n".join(statements) + "\n"
         return ddl
 
+    def graph_schema(self) -> GraphSchema:
+        """
+        the graph schema of the node type entities
+
+        Returns:
+            GraphSchema: the mogwai graph schema with one node type per entity carrying a key_field
+        """
+        node_type_configs = {
+            entity.name: entity.node_type_config() for entity in self.node_types()
+        }
+        schema = GraphSchema(
+            node_id_type_name="str", node_type_configs=node_type_configs
+        )
+        return schema
+
     def labels(self, lang: str = "en") -> Dict[str, str]:
         """
         the i18n labels in the given language
@@ -275,15 +336,15 @@ class Fields:
             lang (str): en or de
 
         Returns:
-            Dict[str, str]: <entity>_list for the plural of each table entity,
+            Dict[str, str]: <entity>_list for the plural of each node type,
             <entity>.<field> for each field and the keys of the UI entity as they are
         """
         labels = {}
         for entity in self.entities.values():
             key_prefix = entity.name.lower()
-            if entity.table:
+            if entity.key_field:
                 labels[f"{key_prefix}_list"] = entity.plural_label(lang)
-                labels[key_prefix] = entity.de if lang == "de" else entity.en
+                labels[key_prefix] = entity.label(lang)
             for field_spec in entity.fields.values():
                 if entity.name == "UI":
                     labels[field_spec.name] = field_spec.label(lang)

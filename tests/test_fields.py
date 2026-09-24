@@ -132,3 +132,25 @@ class TestFields(Basetest):
         self.assertEqual("Organisationen", i18n.t("organization_list"))
         i18n.set("locale", "en")
         self.assertEqual("Organizations", i18n.t("organization_list"))
+
+    def test_graph_schema(self):
+        """
+        the graph schema comes from fields.yaml: the eight entities and the node type configuration
+        """
+        schema = self.fields.graph_schema()
+        configs = schema.node_type_configs
+        self.assertEqual(9, len(configs))
+        for topic in SmartCRMAdapter.get_topics():
+            config = configs[topic.name]
+            self.assertEqual(topic.dataclass, config._dataclass, topic.name)
+        person = configs["Person"]
+        self.assertEqual("name", person.key_field)
+        self.assertEqual("person", person.icon)
+        self.assertEqual(20, person.display_order)
+        node_type = configs["NodeTypeConfig"]
+        self.assertEqual("label", node_type.key_field)
+        self.assertEqual(90, node_type.display_order)
+        # the menu is sorted by display_order and labelled by <label>_list
+        ordered = sorted(configs.values(), key=lambda c: c.display_order)
+        self.assertEqual("Organization", ordered[0].label)
+        self.assertEqual("NodeTypeConfig", ordered[-1].label)
